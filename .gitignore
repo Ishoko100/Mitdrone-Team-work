@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# builds
+.next/
+dist/
+out/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# tests
+coverage/
+playwright-report/
+test-results/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# misc
+.DS_Store
+*.log
+.vercel
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

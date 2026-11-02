@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens. Light and dark have full parity. Colors are HSL triplets. */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 30% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 30% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 30% 10%;
+    --primary: 245 58% 51%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 224 30% 15%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 38%;
+    --accent: 245 100% 97%;
+    --accent-foreground: 245 58% 38%;
+    --destructive: 0 72% 44%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 60% 26%;
+    --success-foreground: 0 0% 100%;
+    --warning: 28 90% 30%;
+    --warning-foreground: 0 0% 100%;
+    --border: 220 13% 90%;
+    /* Form control borders need 3:1 contrast (WCAG 1.4.11). */
+    --input: 220 9% 58%;
+    --ring: 245 58% 51%;
+    --shadow: 224 30% 10%;
+    --radius: 0.625rem;
+    --chart-1: 245 58% 51%;
+    --chart-2: 172 66% 32%;
+    --chart-3: 28 90% 48%;
+    --chart-4: 330 70% 48%;
+    --chart-5: 205 80% 42%;
+  }
+
+  .dark {
+    --background: 224 25% 7%;
+    --foreground: 220 15% 95%;
+    --card: 224 22% 9.5%;
+    --card-foreground: 220 15% 95%;
+    --popover: 224 22% 10%;
+    --popover-foreground: 220 15% 95%;
+    --primary: 245 90% 72%;
+    --primary-foreground: 224 30% 8%;
+    --secondary: 224 15% 16%;
+    --secondary-foreground: 220 15% 92%;
+    --muted: 224 15% 15%;
+    --muted-foreground: 220 10% 68%;
+    --accent: 245 40% 20%;
+    --accent-foreground: 245 90% 86%;
+    --destructive: 0 80% 66%;
+    --destructive-foreground: 224 30% 8%;
+    --success: 152 55% 55%;
+    --success-foreground: 224 30% 8%;
+    --warning: 38 92% 62%;
+    --warning-foreground: 224 30% 8%;
+    --border: 224 15% 18%;
+    --input: 224 10% 46%;
+    --ring: 245 90% 72%;
+    --shadow: 0 0% 0%;
+    --chart-1: 245 90% 72%;
+    --chart-2: 172 60% 50%;
+    --chart-3: 35 92% 60%;
+    --chart-4: 330 80% 68%;
+    --chart-5: 205 85% 62%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  :focus-visible {
+    @apply ring-ring ring-offset-background outline-none ring-2 ring-offset-2;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
