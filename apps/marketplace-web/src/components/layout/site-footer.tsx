@@ -38,7 +38,6 @@ export function SiteFooter() {
       <div className="border-t">
         <div className="text-muted-foreground container flex flex-col gap-2 py-5 text-xs sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} Mitdrone. All rights reserved.</p>
-          <p>Demo build: all data is mocked and no payments are processed.</p>
         </div>
       </div>
     </footer>

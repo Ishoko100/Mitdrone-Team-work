@@ -333,6 +333,38 @@ export function LiveStrip({ sessions }: { sessions: LiveSession[] }) {
   );
 }
 
+const TRUSTED_BRANDS = [
+  { name: 'DJI', href: '/products?brand=DJI', style: 'font-extrabold italic tracking-tight' },
+  { name: 'AUTEL', subname: 'ROBOTICS', href: '/products?brand=Autel%20Robotics', style: 'font-bold tracking-wide' },
+  { name: 'Parrot', href: '/products?brand=Parrot', style: 'font-serif text-2xl' },
+  { name: 'SKYDIO', href: '/products?brand=Skydio', style: 'font-bold tracking-tight' },
+  { name: 'YUNEEC', href: '/products?brand=Yuneec', style: 'font-extrabold tracking-wide' },
+  { name: 'HIKVISION', href: '/products?brand=Hikvision', style: 'font-bold italic tracking-tight' },
+  { name: 'Insta360', href: '/products?brand=Insta360', style: 'font-extrabold tracking-tight' },
+];
+
+export function TrustedBrandsStrip() {
+  return (
+    <Section className="py-8">
+      <SectionHeader title="Trusted Brands" href="/brands" linkLabel="View All Brands →" />
+      <ul className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card sm:grid-cols-4 lg:grid-cols-7">
+        {TRUSTED_BRANDS.map((brand) => (
+          <li key={brand.name} className="border-b border-r last:border-r-0 sm:[&:nth-child(4)]:border-r-0 lg:border-b-0 lg:[&:nth-child(4)]:border-r">
+            <Link
+              href={brand.href}
+              aria-label={`Shop ${brand.name}`}
+              className="text-foreground/90 hover:bg-muted/60 flex min-h-16 items-center justify-center gap-1 px-3 py-4 text-center transition-colors"
+            >
+              <span className={brand.style}>{brand.name}</span>
+              {brand.subname ? <span className="self-end pb-0.5 text-[8px] font-semibold tracking-widest">{brand.subname}</span> : null}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
 export function ManufacturerStrip({ manufacturers }: { manufacturers: Manufacturer[] }) {
   if (!manufacturers.length) return null;
   return (

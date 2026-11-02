@@ -62,8 +62,8 @@ export function MegaMenu({ items, linkAs: L = 'a' }: { items: MegaMenuItem[]; li
                     aria-hidden="true"
                   />
                 </NavigationMenu.Trigger>
-                <NavigationMenu.Content className="data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out">
-                  <div className="grid w-[min(1040px,calc(100vw-2rem))] gap-x-6 gap-y-8 p-6 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
+                <NavigationMenu.Content>
+                  <div className="grid w-full gap-x-6 gap-y-8 p-6 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
                     {item.columns.map((column) => (
                       <div key={column.title}>
                         <p className="text-muted-foreground mb-2 text-xs font-semibold uppercase tracking-wide">
@@ -125,7 +125,7 @@ export function MegaMenu({ items, linkAs: L = 'a' }: { items: MegaMenuItem[]; li
         ))}
       </NavigationMenu.List>
       <div className="absolute inset-x-0 top-full flex justify-center">
-        <NavigationMenu.Viewport className="bg-popover text-popover-foreground shadow-pop data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 relative mt-1 h-[var(--radix-navigation-menu-viewport-height)] w-[var(--radix-navigation-menu-viewport-width)] max-w-full origin-top overflow-visible rounded-xl border" />
+        <NavigationMenu.Viewport className="bg-popover text-popover-foreground shadow-pop relative mt-1 h-[var(--radix-navigation-menu-viewport-height)] w-[min(1040px,calc(100vw-2rem))] max-w-full origin-top overflow-visible rounded-xl border" />
       </div>
     </NavigationMenu.Root>
   );

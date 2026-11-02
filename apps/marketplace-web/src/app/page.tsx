@@ -4,16 +4,15 @@ import {
   EntryCards,
   FeaturedSection,
   Hero,
-  LiveStrip,
   ManufacturerStrip,
   SellingSteps,
   ServicesSpotlight,
   TrustBar,
+  TrustedBrandsStrip,
   VendorStrip,
 } from '@/components/home/sections';
 import {
   getCategories,
-  getLiveSessions,
   getManufacturers,
   getProducts,
   getServices,
@@ -29,12 +28,11 @@ export const revalidate = 60;
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 export default async function HomePage() {
-  const [deals, featured, categories, services, live, manufacturers, vendors] = await Promise.all([
+  const [deals, featured, categories, services, manufacturers, vendors] = await Promise.all([
     getProducts({ deal: true, pageSize: 4 }),
     getProducts({ featured: true, kind: 'drone', pageSize: 8 }),
     getCategories(),
     getServices({ pageSize: 4 }),
-    getLiveSessions(),
     getManufacturers({ nigerian: true, pageSize: 3 }),
     getVendors({ pageSize: 4 }),
   ]);
@@ -63,7 +61,7 @@ export default async function HomePage() {
       <CategoryTiles categories={categories.filter((c) => c.group === 'drones')} />
       <FeaturedSection products={featured.data} />
       <ServicesSpotlight services={services.data} />
-      <LiveStrip sessions={live.data} />
+      <TrustedBrandsStrip />
       <ManufacturerStrip manufacturers={manufacturers.data} />
       <VendorStrip vendors={vendors.data} />
       <SellingSteps />
