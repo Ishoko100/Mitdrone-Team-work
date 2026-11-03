@@ -11,4 +11,10 @@ export function setMockConfig(partial: Partial<MockConfig>): void {
   Object.assign(mockConfig, partial);
 }
 
-export const MOCK_JWT_SECRET = 'mitdrone-mock-secret';
+/**
+ * Mock-only signing key. NEXTAUTH_SECRET is read when handlers run on the server, but browser
+ * MSW cannot read server-only environment variables and therefore uses this public demo fallback.
+ * Mock JWTs are decoded, not trusted for authorization; production auth belongs on the backend.
+ */
+export const MOCK_JWT_SECRET =
+  (typeof process !== 'undefined' && process.env.NEXTAUTH_SECRET) || 'mitdrone-mock-secret';

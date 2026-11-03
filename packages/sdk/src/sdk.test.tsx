@@ -27,10 +27,15 @@ import {
 import type { ReactNode } from 'react';
 
 const BASE = 'http://api.test/api/v1';
+let testFetch: typeof fetch;
 
 beforeAll(() => {
   setMockConfig({ latency: false });
   server.listen({ onUnhandledRequest: 'error' });
+  const interceptedFetch = globalThis.fetch.bind(globalThis);
+  // jsdom's AbortSignal is a different realm from Node/undici's, which MSW uses here.
+  // Cancellation is covered by the browser integration; unit hook requests omit this signal.
+  testFetch = (input, init) => interceptedFetch(input, { ...init, signal: undefined });
 });
 beforeEach(() => {
   resetDb();
@@ -41,6 +46,7 @@ beforeEach(() => {
     refreshAccessToken: undefined,
     onAuthFailure: undefined,
     onError: undefined,
+    fetch: testFetch,
   });
 });
 afterEach(() => server.resetHandlers());
@@ -139,7 +145,10 @@ describe('client', () => {
 describe('hooks', () => {
   it('useProducts loads a page', async () => {
     const { result } = renderHook(() => useProducts({ pageSize: 4 }), { wrapper: wrapper() });
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => {
+      if (result.current.isError) throw result.current.error;
+      expect(result.current.isSuccess).toBe(true);
+    });
     expect(result.current.data?.data).toHaveLength(4);
   });
 
@@ -152,7 +161,10 @@ describe('hooks', () => {
       },
       { wrapper: wrapper() },
     );
-    await waitFor(() => expect(result.current.pages).toBe(1));
+    await waitFor(() => {
+      if (result.current.query.isError) throw result.current.query.error;
+      expect(result.current.pages).toBe(1);
+    });
     expect(result.current.hasNext).toBe(true);
     await act(async () => {
       await result.current.query.fetchNextPage();

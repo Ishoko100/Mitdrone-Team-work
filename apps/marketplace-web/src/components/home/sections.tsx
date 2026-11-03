@@ -173,7 +173,7 @@ export function DealsSection({ products }: { products: Product[] }) {
   return (
     <Section>
       <SectionHeader
-        title={<>🔥 Deals of the Week</>}
+        title={<> Deals of the Week</>}
         description="Limited-time prices from verified sellers."
         href="/offers"
       />
