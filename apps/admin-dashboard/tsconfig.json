@@ -3,7 +3,22 @@
   "compilerOptions": {
     "baseUrl": ".",
     "plugins": [{ "name": "next" }],
-    "paths": { "@/*": ["./src/*"] }
+    "paths": {
+      "@/*": ["./src/*"],
+      "@mitdrone/auth": ["../../packages/auth/src/index.ts"],
+      "@mitdrone/config/tailwind-preset": ["../../packages/config/tailwind-preset.ts"],
+      "@mitdrone/data": ["../../packages/data/src/index.ts"],
+      "@mitdrone/mocks": ["../../packages/mocks/src/index.ts"],
+      "@mitdrone/mocks/browser": ["../../packages/mocks/src/browser.ts"],
+      "@mitdrone/mocks/fetch": ["../../packages/mocks/src/mock-fetch.ts"],
+      "@mitdrone/mocks/node": ["../../packages/mocks/src/node.ts"],
+      "@mitdrone/sdk": ["../../packages/sdk/src/index.ts"],
+      "@mitdrone/types": ["../../packages/types/src/index.ts"],
+      "@mitdrone/ui": ["../../packages/ui/src/index.ts"],
+      "@mitdrone/ui/charts": ["../../packages/ui/src/components/charts/index.ts"],
+      "@mitdrone/ui/styles.css": ["../../packages/ui/src/styles/globals.css"],
+      "@mitdrone/utils": ["../../packages/utils/src/index.ts"]
+    }
   },
   "include": ["next-env.d.ts", "src", "*.ts", "*.mts", ".next/types/**/*.ts"],
   "exclude": ["node_modules", "e2e"]

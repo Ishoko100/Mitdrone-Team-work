@@ -1,4 +1,4 @@
-import preset from '@mitdrone/config/tailwind-preset';
+import preset from '../../packages/config/tailwind-preset';
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
