@@ -3,3 +3,177 @@
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
+
+body.marketplace-theme {
+  --background: 210 33% 98%;
+  --foreground: 207 61% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 207 61% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 207 61% 18%;
+  --primary: 221 83% 51%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 207 35% 94%;
+  --secondary-foreground: 207 55% 20%;
+  --muted: 207 35% 94%;
+  --muted-foreground: 208 21% 39%;
+  --accent: 185 60% 93%;
+  --accent-foreground: 186 78% 21%;
+  --border: 208 35% 88%;
+  --input: 208 22% 66%;
+  --ring: 221 83% 51%;
+}
+
+html.dark body.marketplace-theme {
+  --background: 211 53% 9%;
+  --foreground: 210 25% 96%;
+  --card: 208 60% 12%;
+  --card-foreground: 210 25% 96%;
+  --popover: 208 60% 12%;
+  --popover-foreground: 210 25% 96%;
+  --primary: 209 100% 70%;
+  --primary-foreground: 211 53% 9%;
+  --secondary: 208 35% 17%;
+  --secondary-foreground: 210 25% 94%;
+  --muted: 208 35% 16%;
+  --muted-foreground: 208 18% 70%;
+  --accent: 190 57% 15%;
+  --accent-foreground: 184 75% 80%;
+  --border: 208 30% 21%;
+  --input: 208 20% 42%;
+  --ring: 209 100% 70%;
+}
+
+.marketplace-hero {
+  background:
+    radial-gradient(ellipse at 78% 15%, rgb(32 184 200 / 22%), transparent 34%),
+    linear-gradient(112deg, #091d30 0%, #0b3552 58%, #087987 100%);
+  color: #f4f9fc;
+}
+
+.marketplace-hero .text-muted-foreground {
+  color: rgb(230 241 248 / 78%);
+}
+
+.marketplace-hero-badge {
+  border: 1px solid rgb(255 255 255 / 20%);
+  background: rgb(255 255 255 / 10%);
+  color: #f4f9fc;
+}
+
+.marketplace-hero-highlight {
+  background: linear-gradient(95deg, #7de4e9, #a6caff 78%);
+  background-clip: text;
+  color: transparent;
+}
+
+.marketplace-hero-visual {
+  border-color: rgb(255 255 255 / 18%);
+  background:
+    radial-gradient(ellipse at 55% 46%, rgb(38 193 208 / 18%), transparent 54%),
+    linear-gradient(145deg, rgb(255 255 255 / 9%), rgb(3 22 38 / 35%));
+  box-shadow: 0 28px 80px rgb(1 12 24 / 28%);
+}
+
+.marketplace-hero-orbit {
+  position: absolute;
+  aspect-ratio: 1;
+  border: 1px solid rgb(207 249 255 / 12%);
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.marketplace-hero-orbit-one {
+  width: 72%;
+  left: 14%;
+  top: 10%;
+}
+
+.marketplace-hero-orbit-two {
+  width: 92%;
+  left: 4%;
+  top: 0%;
+}
+
+.marketplace-hero-float {
+  border-color: rgb(255 255 255 / 18%);
+  background: rgb(8 29 47 / 74%);
+  color: #f4f9fc;
+}
+
+.marketplace-hero-float-top {
+  animation: hero-float 6s ease-in-out infinite;
+}
+
+.marketplace-hero-float-bottom {
+  animation: hero-float 6s ease-in-out -3s infinite;
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes brand-marquee-scroll {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.brand-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.brand-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: brand-marquee-scroll 30s linear infinite;
+}
+
+.cart-count-pop {
+  display: inline-block;
+  animation: cart-count-pop 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cart-count-pop {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.55) translateY(-3px);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.2) translateY(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-marquee-track {
+    animation: none;
+    transform: none;
+  }
+
+  .brand-marquee-track > ul[aria-hidden='true'] {
+    display: none;
+  }
+
+  .cart-count-pop {
+    animation: none;
+  }
+
+  .marketplace-hero-float-top,
+  .marketplace-hero-float-bottom {
+    animation: none;
+  }
+}

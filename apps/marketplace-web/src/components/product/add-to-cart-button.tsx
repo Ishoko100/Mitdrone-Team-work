@@ -1,10 +1,10 @@
 'use client';
 
-import { Button, toast, type ButtonProps } from '@mitdrone/ui';
-import { ShoppingCart } from 'lucide-react';
+import { Button, cn, toast, type ButtonProps } from '@mitdrone/ui';
+import { Check, ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
 
 import { useCartStore } from '@/stores/cart';
-import { useUiStore } from '@/stores/ui';
 
 import type { Product, Variant } from '@mitdrone/types';
 
@@ -21,24 +21,30 @@ interface Props extends Omit<ButtonProps, 'onClick' | 'children'> {
 }
 
 /**
- * Optimistic by design: the cart is local state, so the item appears instantly and the mini-cart
- * opens. Price and stock are re-validated by the API at checkout.
+ * Optimistic by design: the item appears in the local cart immediately. Price and stock are
+ * re-validated by the API at checkout.
  */
 export function AddToCartButton({
   product,
   productVariant: variant,
   quantity = 1,
   label = 'Add to cart',
+  className,
   ...props
 }: Props) {
   const add = useCartStore((s) => s.add);
-  const setCartOpen = useUiStore((s) => s.setCartOpen);
+  const [added, setAdded] = useState(false);
   const source = variant ?? product;
   const stock = source.inventory.quantity;
 
   return (
     <Button
       disabled={stock <= 0}
+      className={cn(
+        'relative transition-all duration-200 active:scale-[0.97]',
+        added && 'bg-emerald-600 text-white hover:bg-emerald-700',
+        className,
+      )}
       onClick={() => {
         const result = add(
           {
@@ -54,12 +60,17 @@ export function AddToCartButton({
           quantity,
         );
         if (result.capped) toast.info(`Only ${stock} available. We added the maximum.`);
-        setCartOpen(true);
+        setAdded(true);
+        window.setTimeout(() => setAdded(false), 1400);
       }}
       {...props}
     >
-      <ShoppingCart aria-hidden="true" />
-      {stock <= 0 ? 'Out of stock' : label}
+      {added ? (
+        <Check className="animate-in zoom-in-50 duration-200" aria-hidden="true" />
+      ) : (
+        <ShoppingCart aria-hidden="true" />
+      )}
+      {stock <= 0 ? 'Out of stock' : added ? 'Added!' : label}
     </Button>
   );
 }

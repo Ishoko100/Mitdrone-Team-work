@@ -39,7 +39,9 @@ export function CartSheet() {
           <ShoppingCart aria-hidden="true" />
           {count > 0 ? (
             <span className="bg-primary text-primary-foreground absolute -right-0.5 -top-0.5 flex min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold leading-5">
-              {count}
+              <span key={count} className="cart-count-pop">
+                {count}
+              </span>
             </span>
           ) : null}
         </Button>

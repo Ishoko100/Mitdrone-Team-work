@@ -32,6 +32,8 @@ export interface MegaMenuItem {
   href?: string;
   columns?: MegaMenuColumn[];
   featured?: MegaMenuFeatured;
+  iconSrc?: string;
+  showChevron?: boolean;
 }
 
 interface LinkLikeProps {
@@ -44,23 +46,34 @@ interface LinkLikeProps {
 export type LinkAs = ElementType<LinkLikeProps>;
 
 const triggerClass =
-  'inline-flex h-10 items-center gap-1 rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent';
+  'inline-flex h-10 items-center gap-2 rounded-md px-3 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent';
 
 /** Desktop mega menu. Place inside a `relative` header: the panel spans the header width. */
 export function MegaMenu({ items, linkAs: L = 'a' }: { items: MegaMenuItem[]; linkAs?: LinkAs }) {
   return (
     <NavigationMenu.Root aria-label="Primary" className="hidden lg:block">
-      <NavigationMenu.List className="flex items-center gap-0.5">
+      <NavigationMenu.List className="flex items-center gap-1">
         {items.map((item) => (
           <NavigationMenu.Item key={item.label}>
             {item.columns ? (
               <>
                 <NavigationMenu.Trigger className={cn(triggerClass, 'group')}>
+                  {item.iconSrc ? (
+                    <span
+                      className="mr-1 size-4 bg-current [mask-size:contain] [mask-position:center] [mask-repeat:no-repeat]"
+                      style={{
+                        maskImage: `url(${item.iconSrc})`,
+                        WebkitMaskImage: `url(${item.iconSrc})`,
+                      }}
+                      aria-hidden="true"
+                    />
+                  ) : item.showChevron ? (
+                    <ChevronDown
+                      className="size-3.5 transition-transform group-data-[state=open]:rotate-180"
+                      aria-hidden="true"
+                    />
+                  ) : null}
                   {item.label}
-                  <ChevronDown
-                    className="size-3.5 transition-transform group-data-[state=open]:rotate-180"
-                    aria-hidden="true"
-                  />
                 </NavigationMenu.Trigger>
                 <NavigationMenu.Content>
                   <div className="grid w-full gap-x-6 gap-y-8 p-6 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">

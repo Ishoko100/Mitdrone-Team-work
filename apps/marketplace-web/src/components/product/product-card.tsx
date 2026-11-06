@@ -25,7 +25,7 @@ export function ProductCard({
     product.inventory.quantity <= product.inventory.lowStockThreshold;
 
   return (
-    <article className="bg-card shadow-soft hover:shadow-card group relative flex flex-col overflow-hidden rounded-xl border transition-shadow">
+    <article className="bg-card shadow-soft hover:shadow-card group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-xl border transition-shadow">
       <Link
         href={href}
         tabIndex={-1}
@@ -61,20 +61,24 @@ export function ProductCard({
         </div>
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
-        {product.vendor ? (
-          <p className="text-muted-foreground flex items-center gap-1 text-xs">
-            <span className="truncate">{product.vendor.name}</span>
-            {product.vendor.verified ? (
-              <BadgeCheck className="text-primary size-3.5 shrink-0" aria-label="Verified seller" />
-            ) : null}
-          </p>
-        ) : null}
-        <h3 className="line-clamp-2 text-sm font-medium leading-snug">
+        <div className="text-muted-foreground flex min-h-5 items-center gap-1 text-xs">
+          {product.vendor ? (
+            <p className="flex min-w-0 items-center gap-1">
+              <span className="truncate">{product.vendor.name}</span>
+              {product.vendor.verified ? (
+                <BadgeCheck className="text-primary size-3.5 shrink-0" aria-label="Verified seller" />
+              ) : null}
+            </p>
+          ) : null}
+        </div>
+        <h3 className="line-clamp-2 min-h-10 text-sm font-medium leading-snug">
           <Link href={href} className="after:absolute after:inset-0 after:content-['']">
             {product.title}
           </Link>
         </h3>
-        <RatingStars rating={product.rating} count={product.reviewCount} />
+        <div className="flex min-h-5 items-center">
+          <RatingStars rating={product.rating} count={product.reviewCount} />
+        </div>
         <div className="mt-auto space-y-3 pt-1">
           {isRental && product.rental ? (
             <Price price={product.rental.daily} suffix="/ day" />
@@ -86,13 +90,21 @@ export function ProductCard({
               Only {product.inventory.quantity} left
             </p>
           ) : null}
-          <div className="relative z-10">
+          <div className="relative z-10 flex gap-2">
+            <Button asChild variant="outline" size="sm" className="flex-1 px-2">
+              <Link href={href}>Details</Link>
+            </Button>
             {isRental || product.variants.length > 0 ? (
-              <Button asChild variant="outline" size="sm" className="w-full">
-                <Link href={href}>{isRental ? 'Check availability' : 'Choose options'}</Link>
+              <Button asChild size="sm" className="flex-1 px-2">
+                <Link href={href}>{isRental ? 'Check availability' : 'Add to cart'}</Link>
               </Button>
             ) : (
-              <AddToCartButton product={product} size="sm" variant="outline" className="w-full" />
+              <AddToCartButton
+                product={product}
+                size="sm"
+                className="flex-1 px-2"
+                label="Add to Cart"
+              />
             )}
           </div>
         </div>
@@ -104,12 +116,12 @@ export function ProductCard({
 export function ProductGrid({ products, className }: { products: Product[]; className?: string }) {
   return (
     <ul
-      className={`grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 ${className ?? ''}`}
+      className={`grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 ${className ?? ''}`}
     >
       {products.map((product, index) => (
-        <li key={product.id} className="flex">
-          <div className="flex w-full">
-            <ProductCard product={product} priority={index < 4} />
+        <li key={product.id} className="flex min-w-0">
+          <div className="flex h-full w-full min-w-0">
+            <ProductCard product={product} priority={index < 5} />
           </div>
         </li>
       ))}

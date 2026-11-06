@@ -5,11 +5,9 @@ import {
   FeaturedSection,
   Hero,
   ManufacturerStrip,
-  SellingSteps,
   ServicesSpotlight,
   TrustBar,
   TrustedBrandsStrip,
-  VendorStrip,
 } from '@/components/home/sections';
 import {
   getCategories,
@@ -28,7 +26,7 @@ export const revalidate = 60;
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 export default async function HomePage() {
-  const [deals, featured, categories, services, manufacturers, vendors] = await Promise.all([
+  const [deals, featured, categories, services, manufacturers] = await Promise.all([
     getProducts({ deal: true, pageSize: 4 }),
     getProducts({ featured: true, kind: 'drone', pageSize: 8 }),
     getCategories(),
@@ -57,14 +55,12 @@ export default async function HomePage() {
       />
       <Hero />
       <EntryCards />
+      <FeaturedSection products={featured.data} />
       <DealsSection products={deals.data} />
       <CategoryTiles categories={categories.filter((c) => c.group === 'drones')} />
-      <FeaturedSection products={featured.data} />
       <ServicesSpotlight services={services.data} />
       <TrustedBrandsStrip />
       <ManufacturerStrip manufacturers={manufacturers.data} />
-      <VendorStrip vendors={vendors.data} />
-      <SellingSteps />
       <TrustBar />
     </>
   );

@@ -15,25 +15,64 @@ import {
   toast,
 } from '@mitdrone/ui';
 import { initials } from '@mitdrone/utils';
-import { Gift, LogOut, Package, User } from 'lucide-react';
+import { Bookmark, Gift, Heart, LogOut, Package, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function AccountMenu() {
   const { status, user, logout } = useAuth();
   const router = useRouter();
+  const [guestMenuOpen, setGuestMenuOpen] = useState(false);
 
   if (status === 'loading') return <Skeleton className="size-10 rounded-full" />;
   if (!user) {
     return (
-      <div className="flex items-center gap-1">
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/login">Sign in</Link>
-        </Button>
-        <Button asChild size="sm" className="hidden sm:inline-flex">
-          <Link href="/register">Register</Link>
-        </Button>
-      </div>
+      <DropdownMenu open={guestMenuOpen} onOpenChange={setGuestMenuOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary bg-primary text-white hover:bg-primary/90 hover:text-white"
+            onMouseEnter={() => setGuestMenuOpen(true)}
+          >
+            My Account
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          sideOffset={0}
+          className="w-56"
+          onMouseEnter={() => setGuestMenuOpen(true)}
+          onMouseLeave={() => setGuestMenuOpen(false)}
+        >
+          <DropdownMenuItem asChild>
+            <Link href="/login">
+              <User /> Login / Sign up my Account
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/account/orders">
+              <Package /> My Orders
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/account">
+              <Bookmark /> Saved items
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/support/track-order">
+              <Package /> Track my Order
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/account">
+              <Heart /> Wishlist
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
@@ -56,6 +95,21 @@ export function AccountMenu() {
         <DropdownMenuItem asChild>
           <Link href="/account/orders">
             <Package /> Orders
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/account">
+            <Bookmark /> Saved items
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/support/track-order">
+            <Package /> Track my Order
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/account">
+            <Heart /> Wishlist
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

@@ -90,8 +90,8 @@ const liveLinks = [
 export const NAV_ITEMS: MegaMenuItem[] = [
   {
     label: 'Categories',
+    iconSrc: '/categories-grid-icon.png',
     columns: [
-      { title: 'Drones', links: DRONES.map(cat) },
       { title: 'By Industry', links: INDUSTRIES.map(cat) },
       {
         title: 'By Purpose',
@@ -111,6 +111,12 @@ export const NAV_ITEMS: MegaMenuItem[] = [
       href: '/services/find',
       cta: 'Find what you need',
     },
+  },
+  {
+    label: 'Drone',
+    columns: [
+      { title: 'Drones', links: DRONES.map(cat) },
+    ],
   },
   {
     label: 'Shop',
@@ -146,97 +152,10 @@ export const NAV_ITEMS: MegaMenuItem[] = [
       },
     ],
     featured: {
-      title: '🔥 Deals of the Week',
+      title: 'Deals of the Week',
       description: 'Limited-time prices on drones and accessories.',
       href: '/offers',
       cta: 'See the deals',
-    },
-  },
-  {
-    label: 'Services',
-    columns: [
-      {
-        title: 'Drone Services',
-        links: [
-          'Aerial Photography',
-          'Aerial Videography',
-          'Land Surveying',
-          'Mapping',
-          'Photogrammetry',
-          '3D Mapping',
-          'Agriculture Monitoring',
-          'Crop Spraying',
-          'Construction Monitoring',
-          'Security & Surveillance',
-          'Infrastructure Inspection',
-          'Powerline Inspection',
-          'Oil & Gas Inspection',
-          'Mining',
-          'Thermal Inspection',
-          'Real Estate Photography',
-          'Search & Rescue',
-        ].map(service),
-      },
-      {
-        title: 'Professional Services',
-        links: [
-          { label: 'Find a Drone Operator', href: '/services/providers' },
-          { label: 'Hire a Pilot', href: '/services?category=hire-a-pilot' },
-          { label: 'Request a Drone Service', href: '/services/find' },
-          { label: 'Post a Project', href: '/services/post-project' },
-        ],
-      },
-      {
-        title: 'Support Services',
-        links: ['Drone Repairs', 'Maintenance', 'Calibration', 'Training', 'Technical Support'].map(
-          service,
-        ),
-      },
-    ],
-    featured: {
-      title: 'Need your farm mapped?',
-      description:
-        'Pick a service, add your location and size, and get quotes from verified operators.',
-      href: '/services/find?service=mapping',
-      cta: 'Get quotes',
-    },
-  },
-  {
-    label: 'Rent',
-    columns: [
-      {
-        title: 'Rent a Drone',
-        links: [
-          { label: 'Consumer Drones', href: '/rent?category=consumer-drones' },
-          { label: 'Enterprise Drones', href: '/rent?category=enterprise-drones' },
-          { label: 'Agriculture Drones', href: '/rent?category=agricultural-drones' },
-          { label: 'Mapping Drones', href: '/rent?category=mapping-and-surveying-drones' },
-          { label: 'Camera Drones', href: '/rent?category=photography-and-filmmaking-drones' },
-          { label: 'Security Drones', href: '/rent?category=security-and-surveillance-drones' },
-        ],
-      },
-      {
-        title: 'Rental Options',
-        links: [
-          { label: 'Daily', href: '/rent?period=daily' },
-          { label: 'Weekly', href: '/rent?period=weekly' },
-          { label: 'Monthly', href: '/rent?period=monthly' },
-        ],
-      },
-      {
-        title: 'Rent From',
-        links: [
-          { label: 'Mitdrone', href: '/rent?from=mitdrone' },
-          { label: 'Verified Sellers', href: '/rent?from=sellers' },
-          { label: 'Verified Owners', href: '/rent?from=owners' },
-        ],
-      },
-    ],
-    featured: {
-      title: 'List your drone for rent',
-      description: 'Coming soon: earn from a drone that sits idle.',
-      href: '/sell?type=rent',
-      cta: 'Join the waitlist',
     },
   },
   {
@@ -342,53 +261,115 @@ export const NAV_ITEMS: MegaMenuItem[] = [
     },
   },
   {
-    label: 'Offers',
+    label: 'Drone Software & Data',
     columns: [
       {
-        title: 'Deals',
+        title: 'Software & Platforms',
         links: [
-          { label: "Today's Deals", href: '/offers?type=today' },
-          { label: 'Flash Sales', href: '/offers?type=flash' },
-          { label: 'Limited-Time Offers', href: '/offers?type=limited' },
-          { label: 'Clearance', href: '/offers?type=clearance' },
+          'Mapping software',
+          'Flight planning software',
+          'Photogrammetry software',
+          'Agricultural analytics',
+          'AI image analysis',
+          'Object detection',
+          'Thermal analysis',
+          'Surveying platforms',
+          'Fleet management',
+          'Drone security software',
+          'Data processing',
+        ].map((name) => ({ label: name, href: `/products?q=${encodeURIComponent(name)}` })),
+      },
+    ],
+  },
+  {
+    label: 'Drone Services',
+    columns: [
+      {
+        title: 'Drone Services',
+        links: [
+          'Aerial Photography',
+          'Aerial Videography',
+          'Land Surveying',
+          'Mapping',
+          'Photogrammetry',
+          '3D Mapping',
+          'Agriculture Monitoring',
+          'Crop Spraying',
+          'Construction Monitoring',
+          'Security & Surveillance',
+          'Infrastructure Inspection',
+          'Powerline Inspection',
+          'Oil & Gas Inspection',
+          'Mining',
+          'Thermal Inspection',
+          'Real Estate Photography',
+          'Search & Rescue',
+        ].map(service),
+      },
+      {
+        title: 'Professional Services',
+        links: [
+          { label: 'Find a Drone Operator', href: '/services/providers' },
+          { label: 'Hire a Pilot', href: '/services?category=hire-a-pilot' },
+          { label: 'Request a Drone Service', href: '/services/find' },
+          { label: 'Post a Project', href: '/services/post-project' },
         ],
       },
       {
-        title: 'Promotions',
+        title: 'Support Services',
+        links: ['Drone Repairs', 'Maintenance', 'Calibration', 'Training', 'Technical Support'].map(
+          service,
+        ),
+      },
+    ],
+    featured: {
+      title: 'Need your farm mapped?',
+      description:
+        'Pick a service, add your location and size, and get quotes from verified operators.',
+      href: '/services/find?service=mapping',
+      cta: 'Get quotes',
+    },
+  },
+  {
+    label: 'Rent',
+    columns: [
+      {
+        title: 'Rent a Drone',
         links: [
-          { label: '10% Off Selected Drones', href: '/offers?kind=drone' },
-          { label: 'Bundle Deals', href: '/offers?type=bundle' },
-          { label: 'Accessories Deals', href: '/offers?kind=accessory' },
-          { label: 'Seasonal Offers', href: '/offers?type=seasonal' },
+          { label: 'Consumer Drones', href: '/rent?category=consumer-drones' },
+          { label: 'Enterprise Drones', href: '/rent?category=enterprise-drones' },
+          { label: 'Agriculture Drones', href: '/rent?category=agricultural-drones' },
+          { label: 'Mapping Drones', href: '/rent?category=mapping-and-surveying-drones' },
+          { label: 'Camera Drones', href: '/rent?category=photography-and-filmmaking-drones' },
+          { label: 'Security Drones', href: '/rent?category=security-and-surveillance-drones' },
         ],
       },
       {
-        title: 'Price',
+        title: 'Rental Options',
         links: [
-          { label: 'Under ₦500K', href: priceHref(0, 50_000_000) },
-          { label: 'Under ₦1M', href: priceHref(0, 100_000_000) },
-          { label: 'Best Value', href: '/products?sort=rating' },
-          { label: 'Pre-Owned Deals', href: '/products?condition=used' },
+          { label: 'Daily', href: '/rent?period=daily' },
+          { label: 'Weekly', href: '/rent?period=weekly' },
+          { label: 'Monthly', href: '/rent?period=monthly' },
         ],
       },
       {
-        title: 'Featured',
+        title: 'Rent From',
         links: [
-          { label: 'Featured Drones', href: '/products?kind=drone&featured=true' },
-          { label: 'Featured Sellers', href: '/vendors' },
-          { label: 'New Arrivals', href: '/products?sort=newest' },
+          { label: 'Mitdrone', href: '/rent?from=mitdrone' },
+          { label: 'Verified Sellers', href: '/rent?from=sellers' },
+          { label: 'Verified Owners', href: '/rent?from=owners' },
         ],
       },
     ],
     featured: {
-      title: '🔥 Deals of the Week',
-      description: 'Fresh discounts every week.',
-      href: '/offers',
-      cta: 'Shop deals',
+      title: 'List your drone for rent',
+      description: 'Coming soon: earn from a drone that sits idle.',
+      href: '/sell?type=rent',
+      cta: 'Join the waitlist',
     },
   },
   {
-    label: 'Sell',
+    label: 'Sell on Mitdrone',
     columns: [
       {
         title: 'Start selling',
@@ -440,7 +421,54 @@ export const NAV_ITEMS: MegaMenuItem[] = [
     },
   },
   {
+    label: 'Offers',
+    columns: [
+      {
+        title: 'Deals',
+        links: [
+          { label: "Today's Deals", href: '/offers?type=today' },
+          { label: 'Flash Sales', href: '/offers?type=flash' },
+          { label: 'Limited-Time Offers', href: '/offers?type=limited' },
+          { label: 'Clearance', href: '/offers?type=clearance' },
+        ],
+      },
+      {
+        title: 'Promotions',
+        links: [
+          { label: '10% Off Selected Drones', href: '/offers?kind=drone' },
+          { label: 'Bundle Deals', href: '/offers?type=bundle' },
+          { label: 'Accessories Deals', href: '/offers?kind=accessory' },
+          { label: 'Seasonal Offers', href: '/offers?type=seasonal' },
+        ],
+      },
+      {
+        title: 'Price',
+        links: [
+          { label: 'Under ₦500K', href: priceHref(0, 50_000_000) },
+          { label: 'Under ₦1M', href: priceHref(0, 100_000_000) },
+          { label: 'Best Value', href: '/products?sort=rating' },
+          { label: 'Pre-Owned Deals', href: '/products?condition=used' },
+        ],
+      },
+      {
+        title: 'Featured',
+        links: [
+          { label: 'Featured Drones', href: '/products?kind=drone&featured=true' },
+          { label: 'Featured Sellers', href: '/vendors' },
+          { label: 'New Arrivals', href: '/products?sort=newest' },
+        ],
+      },
+    ],
+    featured: {
+      title: 'Deals of the Week',
+      description: 'Fresh discounts every week.',
+      href: '/offers',
+      cta: 'Shop deals',
+    },
+  },
+  {
     label: 'More',
+    showChevron: true,
     columns: [
       {
         title: 'Referral & Earn',
@@ -460,12 +488,6 @@ export const NAV_ITEMS: MegaMenuItem[] = [
         links: liveLinks.map(([label, type]) => ({ label, href: `/live?type=${type}` })),
       },
     ],
-    featured: {
-      title: 'Share Mitdrone. Earn.',
-      description: 'Refer a friend and earn a reward when they buy.',
-      href: '/referral',
-      cta: 'Start earning',
-    },
   },
 ];
 

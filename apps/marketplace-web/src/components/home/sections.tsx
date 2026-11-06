@@ -1,5 +1,5 @@
 import { Badge, Button } from '@mitdrone/ui';
-import { formatDateTime, formatMoney, SELLING_STEPS } from '@mitdrone/utils';
+import { formatDateTime, formatMoney } from '@mitdrone/utils';
 import {
   BadgeCheck,
   CalendarClock,
@@ -16,18 +16,16 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { SearchBar } from '@/components/layout/search-bar';
 import { ProductGrid } from '@/components/product/product-card';
 import { RatingStars } from '@/components/product/rating-stars';
-import { env } from '@/lib/env';
+
 
 import type {
   Category,
   LiveSession,
   Manufacturer,
   Product,
-  ServiceListing,
-  Vendor,
+  ServiceListing
 } from '@mitdrone/types';
 import type { ReactNode } from 'react';
 
@@ -63,48 +61,57 @@ export const Section = ({ children, className }: { children: ReactNode; classNam
 
 export function Hero() {
   return (
-    <section className="from-accent/70 to-background relative overflow-hidden border-b bg-gradient-to-b">
-      <div className="container grid items-center gap-10 py-14 lg:grid-cols-[1.2fr_1fr] lg:py-20">
-        <div className="space-y-6">
-          <Badge className="gap-1.5">
-            <ShieldCheck className="size-3.5" aria-hidden="true" /> Verified drones, sellers and
-            operators
+    <section className="marketplace-hero relative overflow-hidden border-b">
+      <div className="container grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-16">
+        <div className="relative z-10 space-y-6">
+          <Badge className="marketplace-hero-badge gap-1.5 rounded-full px-3 py-1">
+            <ShieldCheck className="size-3.5" aria-hidden="true" /> Verified sellers · Buyer protection
           </Badge>
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-            Secure Drone Marketplace
-          </h1>
-          <p className="text-muted-foreground max-w-xl text-lg">
-            Buy, sell, rent and discover verified drones
-          </p>
-          <SearchBar className="max-w-xl" />
-          <ul className="flex flex-wrap gap-2 text-sm" aria-label="Popular searches">
-            {[
-              'DJI Mavic 3',
-              'Agras sprayer',
-              'Thermal inspection',
-              'Farm mapping',
-              'Used drones',
-            ].map((term) => (
-              <li key={term}>
-                <Link
-                  href={`/search?q=${encodeURIComponent(term)}`}
-                  className="bg-background text-muted-foreground hover:text-foreground rounded-full border px-3 py-1 transition-colors"
-                >
-                  {term}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-4">
+            <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              Find the right drone for <span className="marketplace-hero-highlight">the work ahead.</span>
+            </h1>
+            <p className="text-muted-foreground max-w-xl text-base leading-relaxed sm:text-lg">
+              Shop drones, equipment and services for mapping, agriculture, inspection and more.
+            </p>
+          </div>
+          <div className="text-muted-foreground flex flex-wrap gap-x-5 gap-y-2 pt-1 text-xs font-medium sm:text-sm">
+            <span className="inline-flex items-center gap-1.5">
+              <BadgeCheck className="text-primary size-4" aria-hidden="true" /> Verified sellers
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <ShieldCheck className="text-primary size-4" aria-hidden="true" /> Buyer protection
+            </span>
+          </div>
         </div>
-        <div className="bg-card shadow-card relative hidden aspect-[4/3] overflow-hidden rounded-3xl border lg:block">
+        <div className="marketplace-hero-visual relative isolate min-h-[280px] overflow-hidden rounded-[2rem] border sm:min-h-[390px] lg:min-h-[460px]">
+          <div className="marketplace-hero-orbit marketplace-hero-orbit-one" />
+          <div className="marketplace-hero-orbit marketplace-hero-orbit-two" />
           <Image
-            src="/placeholders/drone-1.svg"
-            alt=""
+            src="/hero-drone.jpg"
+            alt="Camera drone flying over a landscape"
             fill
             priority
-            sizes="40vw"
-            className="object-cover"
+            sizes="(min-width:1024px) 45vw, 100vw"
+            className="relative z-10 object-cover"
           />
+          <div className="marketplace-hero-float marketplace-hero-float-top absolute left-4 top-4 z-20 flex items-center gap-2 rounded-2xl border px-3 py-2.5 shadow-lg backdrop-blur-md sm:left-6 sm:top-6">
+            <span className="bg-emerald-400/15 text-emerald-300 flex size-9 items-center justify-center rounded-xl">
+              <BadgeCheck className="size-5" aria-hidden="true" />
+            </span>
+            <span>
+              <span className="block text-xs font-semibold sm:text-sm">Drone marketplace</span>
+              <span className="block text-[10px] opacity-75 sm:text-xs">Shop with confidence</span>
+            </span>
+          </div>
+          <div className="marketplace-hero-float marketplace-hero-float-bottom absolute bottom-4 right-4 z-20 rounded-2xl border px-4 py-3 shadow-lg backdrop-blur-md sm:bottom-6 sm:right-6">
+            <span className="block text-[10px] font-medium uppercase tracking-[0.18em] opacity-70 sm:text-xs">
+              One marketplace
+            </span>
+            <span className="mt-1 block text-sm font-semibold sm:text-base">
+              Drones · Gear · Services
+            </span>
+          </div>
         </div>
       </div>
     </section>
@@ -334,37 +341,55 @@ export function LiveStrip({ sessions }: { sessions: LiveSession[] }) {
 }
 
 const TRUSTED_BRANDS = [
-  { name: 'DJI', href: '/products?brand=DJI', style: 'font-extrabold italic tracking-tight' },
-  { name: 'AUTEL', subname: 'ROBOTICS', href: '/products?brand=Autel%20Robotics', style: 'font-bold tracking-wide' },
-  { name: 'Parrot', href: '/products?brand=Parrot', style: 'font-serif text-2xl' },
-  { name: 'SKYDIO', href: '/products?brand=Skydio', style: 'font-bold tracking-tight' },
-  { name: 'YUNEEC', href: '/products?brand=Yuneec', style: 'font-extrabold tracking-wide' },
-  { name: 'HIKVISION', href: '/products?brand=Hikvision', style: 'font-bold italic tracking-tight' },
-  { name: 'Insta360', href: '/products?brand=Insta360', style: 'font-extrabold tracking-tight' },
+  { name: 'DJI', style: 'font-extrabold italic tracking-tight' },
+  { name: 'AUTEL', subname: 'ROBOTICS', style: 'font-bold tracking-wide' },
+  { name: 'Parrot', style: 'font-serif text-2xl' },
+  { name: 'SKYDIO', style: 'font-bold tracking-tight' },
+  { name: 'YUNEEC', style: 'font-extrabold tracking-wide' },
+  { name: 'HIKVISION', style: 'font-bold italic tracking-tight' },
+  { name: 'Insta360', style: 'font-extrabold tracking-tight' },
 ];
 
 export function TrustedBrandsStrip() {
   return (
-    <Section className="py-8">
-      <SectionHeader title="Trusted Brands" href="/brands" linkLabel="View All Brands →" />
-      <ul className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card sm:grid-cols-4 lg:grid-cols-7">
-        {TRUSTED_BRANDS.map((brand) => (
-          <li key={brand.name} className="border-b border-r last:border-r-0 sm:[&:nth-child(4)]:border-r-0 lg:border-b-0 lg:[&:nth-child(4)]:border-r">
-            <Link
-              href={brand.href}
-              aria-label={`Shop ${brand.name}`}
-              className="text-foreground/90 hover:bg-muted/60 flex min-h-16 items-center justify-center gap-1 px-3 py-4 text-center transition-colors"
-            >
-              <span className={brand.style}>{brand.name}</span>
-              {brand.subname ? <span className="self-end pb-0.5 text-[8px] font-semibold tracking-widest">{brand.subname}</span> : null}
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <Section className="py-12">
+      <SectionHeader
+        title="Trusted Drone Brands"
+        description="The names shaping the future of flight."
+      />
+      <div className="relative isolate overflow-hidden rounded-3xl border bg-gradient-to-br from-card via-muted/50 to-primary/10 px-5 py-10 shadow-sm sm:px-8">
+        <div className="pointer-events-none absolute -left-16 -top-20 size-56 rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 right-0 size-64 rounded-full bg-sky-400/10 blur-3xl" />
+        <div className="brand-marquee">
+          <div className="brand-marquee-track">
+            {[false, true].map((isDuplicate) => (
+              <ul
+                key={isDuplicate ? 'duplicate' : 'brands'}
+                aria-hidden={isDuplicate || undefined}
+                className="flex shrink-0 items-center gap-4 px-2 sm:gap-5 sm:px-3 lg:gap-6"
+              >
+                {TRUSTED_BRANDS.map((brand) => (
+                  <li
+                    key={brand.name}
+                    className="bg-background/85 text-foreground/85 flex min-h-20 min-w-36 items-center justify-center gap-1 rounded-2xl border border-border/70 px-5 py-4 text-center shadow-lg shadow-black/5 backdrop-blur-sm sm:min-h-24 sm:min-w-40"
+                    aria-label={isDuplicate ? undefined : brand.name}
+                  >
+                    <span className={brand.style}>{brand.name}</span>
+                    {brand.subname ? (
+                      <span className="self-end pb-0.5 text-[8px] font-semibold tracking-widest">
+                        {brand.subname}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
+      </div>
     </Section>
   );
 }
-
 export function ManufacturerStrip({ manufacturers }: { manufacturers: Manufacturer[] }) {
   if (!manufacturers.length) return null;
   return (
@@ -401,68 +426,6 @@ export function ManufacturerStrip({ manufacturers }: { manufacturers: Manufactur
         ))}
       </ul>
     </Section>
-  );
-}
-
-export function VendorStrip({ vendors }: { vendors: Vendor[] }) {
-  return (
-    <Section>
-      <SectionHeader title="Featured sellers" href="/vendors" />
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {vendors.slice(0, 4).map((v) => (
-          <li key={v.id}>
-            <Link
-              href={`/vendors/${v.slug}`}
-              className="bg-card shadow-soft hover:shadow-card flex h-full flex-col gap-2 rounded-xl border p-4 transition-shadow"
-            >
-              <span className="flex items-center gap-1 font-semibold">
-                {v.name}
-                {v.verified ? (
-                  <BadgeCheck className="text-primary size-4" aria-label="Verified seller" />
-                ) : null}
-              </span>
-              <span className="text-muted-foreground text-xs">
-                {v.city}, {v.state}
-              </span>
-              <RatingStars rating={v.rating} count={v.reviewCount} />
-              <span className="text-muted-foreground text-xs">{v.productCount} products</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </Section>
-  );
-}
-
-export function SellingSteps() {
-  return (
-    <section className="bg-muted/40 border-t py-14">
-      <div className="container space-y-8">
-        <SectionHeader
-          title="How selling works"
-          description="From sign-up to payout in six steps."
-          href="/sell/how-it-works"
-          linkLabel="Learn more"
-        />
-        <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          {SELLING_STEPS.map((step, i) => (
-            <li key={step.title} className="bg-card space-y-2 rounded-xl border p-4">
-              <span
-                className="bg-accent text-accent-foreground flex size-7 items-center justify-center rounded-full text-sm font-semibold"
-                aria-hidden="true"
-              >
-                {i + 1}
-              </span>
-              <p className="font-medium">{step.title}</p>
-              <p className="text-muted-foreground text-xs">{step.description}</p>
-            </li>
-          ))}
-        </ol>
-        <Button asChild size="lg">
-          <a href={`${env.NEXT_PUBLIC_VENDOR_URL}/register`}>List Your Drone</a>
-        </Button>
-      </div>
-    </section>
   );
 }
 
