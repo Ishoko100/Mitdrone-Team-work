@@ -184,7 +184,7 @@ export function DealsSection({ products }: { products: Product[] }) {
         description="Limited-time prices from verified sellers."
         href="/offers"
       />
-      <ProductGrid products={products.slice(0, 4)} />
+      <ProductGrid products={products.slice(0, 5)} />
     </Section>
   );
 }
@@ -216,7 +216,27 @@ export function FeaturedSection({ products }: { products: Product[] }) {
   return (
     <Section>
       <SectionHeader title="Featured drones" href="/products?featured=true" />
-      <ProductGrid products={products.slice(0, 8)} />
+      <ProductGrid products={products.slice(0, 10)} />
+    </Section>
+  );
+}
+
+export function EquipmentSection({ products }: { products: Product[] }) {
+  if (!products.length) return null;
+  return (
+    <Section>
+      <SectionHeader title="Drone Equipment" href="/products?kind=equipment" />
+      <ProductGrid products={products.slice(0, 5)} />
+    </Section>
+  );
+}
+
+export function AccessoriesSection({ products }: { products: Product[] }) {
+  if (!products.length) return null;
+  return (
+    <Section>
+      <SectionHeader title="Accessories" href="/products?kind=accessory" />
+      <ProductGrid products={products.slice(0, 5)} />
     </Section>
   );
 }

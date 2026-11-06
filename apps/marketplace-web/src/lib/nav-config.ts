@@ -281,7 +281,7 @@ export const NAV_ITEMS: MegaMenuItem[] = [
     },
   },
   {
-    label: 'Drone Software & Data',
+    label: 'Software & Data',
     columns: [
       {
         title: 'Softwares & Platforms',

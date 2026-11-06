@@ -1,6 +1,8 @@
 import {
   CategoryTiles,
   DealsSection,
+  EquipmentSection,
+  AccessoriesSection,
   EntryCards,
   FeaturedSection,
   Hero,
@@ -26,9 +28,11 @@ export const revalidate = 60;
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 export default async function HomePage() {
-  const [deals, featured, categories, services, manufacturers] = await Promise.all([
-    getProducts({ deal: true, pageSize: 4 }),
-    getProducts({ featured: true, kind: 'drone', pageSize: 8 }),
+  const [deals, featured, equipment, accessories, categories, services, manufacturers] = await Promise.all([
+    getProducts({ deal: true, pageSize: 5 }),
+    getProducts({ featured: true, kind: 'drone', pageSize: 10 }),
+    getProducts({ kind: 'equipment', pageSize: 5 }),
+    getProducts({ kind: 'accessory', pageSize: 5 }),
     getCategories(),
     getServices({ pageSize: 4 }),
     getManufacturers({ nigerian: true, pageSize: 3 }),
@@ -57,6 +61,8 @@ export default async function HomePage() {
       <EntryCards />
       <DealsSection products={deals.data} />
       <FeaturedSection products={featured.data} />
+      <EquipmentSection products={equipment.data} />
+      <AccessoriesSection products={accessories.data} />
       <CategoryTiles categories={categories.filter((c) => c.group === 'drones')} />
       <ServicesSpotlight services={services.data} />
       <TrustedBrandsStrip />

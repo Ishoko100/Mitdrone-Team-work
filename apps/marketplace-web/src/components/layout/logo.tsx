@@ -11,12 +11,12 @@ export function Logo({ className }: { className?: string }) {
       <Image
         src="/apple-touch-icon.png"
         alt=""
-        width={40}
-        height={40}
-        className="size-10 object-contain"
+        width={50}
+        height={50}
+        className="size-15 object-contain"
         priority
       />
-      <span className="text-lg">Mitdrone</span>
+      <span className="text-xl">Mitdrone</span>
     </Link>
   );
 }

@@ -20,7 +20,7 @@ export default async function OffersPage({
     <Suspense fallback={<ListingSkeleton />}>
       <ProductListing
         searchParams={await searchParams}
-        title="🔥 Deals of the Week"
+        title="Deals of the Week"
         description="Limited-time prices from verified sellers. When they are gone, they are gone."
         fixed={{ deal: true }}
       />
