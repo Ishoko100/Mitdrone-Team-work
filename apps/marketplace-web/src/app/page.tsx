@@ -55,8 +55,8 @@ export default async function HomePage() {
       />
       <Hero />
       <EntryCards />
-      <FeaturedSection products={featured.data} />
       <DealsSection products={deals.data} />
+      <FeaturedSection products={featured.data} />
       <CategoryTiles categories={categories.filter((c) => c.group === 'drones')} />
       <ServicesSpotlight services={services.data} />
       <TrustedBrandsStrip />

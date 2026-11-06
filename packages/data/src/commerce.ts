@@ -511,7 +511,12 @@ export function buildProducts(vendors: Vendor[], manufacturers: Manufacturer[]):
         },
       ],
       price: sale,
-      ...(opts.deal ? { compareAtPrice: listPrice, dealEndsAt: daysAhead(5) } : {}),
+      ...(!opts.rent
+        ? {
+            compareAtPrice: opts.deal ? listPrice : naira(Math.round(price * 1.1)),
+            ...(opts.deal ? { dealEndsAt: daysAhead(5) } : {}),
+          }
+        : {}),
       ...(opts.rent
         ? {
             rental: {

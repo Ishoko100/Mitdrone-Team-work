@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { AddToCartButton } from './add-to-cart-button';
 import { Price } from './price';
 import { RatingStars } from './rating-stars';
+import { WishlistButton } from './wishlist-button';
 
 import type { Product } from '@mitdrone/types';
 
@@ -20,6 +21,9 @@ export function ProductCard({
   const image = product.images[0];
   const isRental = product.listingType === 'rent';
   const hasDeal = product.compareAtPrice && product.compareAtPrice.amount > product.price.amount;
+  const rentalCompareAt = product.rental
+    ? { ...product.rental.daily, amount: Math.round(product.rental.daily.amount * 1.1) }
+    : undefined;
   const lowStock =
     product.inventory.quantity > 0 &&
     product.inventory.quantity <= product.inventory.lowStockThreshold;
@@ -30,7 +34,7 @@ export function ProductCard({
         href={href}
         tabIndex={-1}
         aria-hidden="true"
-        className="bg-muted relative block aspect-[4/3] overflow-hidden"
+        className="bg-muted relative block aspect-[4/5] overflow-hidden"
       >
         {image ? (
           <Image
@@ -60,8 +64,9 @@ export function ProductCard({
           ) : null}
         </div>
       </Link>
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <div className="text-muted-foreground flex min-h-5 items-center gap-1 text-xs">
+      <WishlistButton productId={product.id} title={product.title} />
+      <div className="flex flex-1 flex-col gap-1 p-3">
+        <div className="text-muted-foreground flex min-h-4 items-center gap-1 text-xs">
           {product.vendor ? (
             <p className="flex min-w-0 items-center gap-1">
               <span className="truncate">{product.vendor.name}</span>
@@ -71,17 +76,17 @@ export function ProductCard({
             </p>
           ) : null}
         </div>
-        <h3 className="line-clamp-2 min-h-10 text-sm font-medium leading-snug">
+        <h3 className="line-clamp-2 min-h-9 text-sm font-medium leading-tight">
           <Link href={href} className="after:absolute after:inset-0 after:content-['']">
             {product.title}
           </Link>
         </h3>
-        <div className="flex min-h-5 items-center">
+        <div className="flex min-h-4 items-center">
           <RatingStars rating={product.rating} count={product.reviewCount} />
         </div>
-        <div className="mt-auto space-y-3 pt-1">
+        <div className="mt-auto space-y-2 pt-0">
           {isRental && product.rental ? (
-            <Price price={product.rental.daily} suffix="/ day" />
+            <Price price={product.rental.daily} compareAt={rentalCompareAt} suffix="/ day" />
           ) : (
             <Price price={product.price} compareAt={product.compareAtPrice} />
           )}
@@ -94,7 +99,7 @@ export function ProductCard({
             <Button asChild variant="outline" size="sm" className="flex-1 px-2">
               <Link href={href}>Details</Link>
             </Button>
-            {isRental || product.variants.length > 0 ? (
+            {isRental ? (
               <Button asChild size="sm" className="flex-1 px-2">
                 <Link href={href}>{isRental ? 'Check availability' : 'Add to cart'}</Link>
               </Button>

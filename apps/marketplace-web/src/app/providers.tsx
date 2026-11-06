@@ -9,10 +9,12 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, type ReactNode } from 'react';
 
 import { useCartStore } from '@/stores/cart';
+import { useWishlistStore } from '@/stores/wishlist';
 
 function CartHydrator() {
   useEffect(() => {
     void useCartStore.persist.rehydrate();
+    void useWishlistStore.persist.rehydrate();
   }, []);
   return null;
 }

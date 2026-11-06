@@ -91,8 +91,34 @@ export const NAV_ITEMS: MegaMenuItem[] = [
   {
     label: 'Categories',
     iconSrc: '/categories-grid-icon.png',
+    categoryLayout: true,
     columns: [
-      { title: 'By Industry', links: INDUSTRIES.map(cat) },
+      {
+        title: 'Drones by Use',
+        links: [
+          'Photography & Videography',
+          'Agriculture',
+          'Surveying & Mapping',
+          'Construction',
+          'Security',
+          'Inspection',
+          'Delivery',
+          'FPV & Racing',
+        ].map((name) => search(name, name)),
+      },
+      {
+        title: 'Drones by Type',
+        links: ['Consumer', 'Professional', 'Enterprise', 'Fixed-Wing', 'VTOL', 'Multirotor'].map(
+          (name) => search(name, name),
+        ),
+      },
+      {
+        title: 'Drone Equipment',
+        links: ['Batteries', 'Propellers', 'Cameras', 'Controllers', 'Sensors'].map((name) =>
+          search(name, name),
+        ),
+      },
+      { title: 'By Industry', links: INDUSTRIES.map((name) => search(name, name)) },
       {
         title: 'By Purpose',
         links: [
@@ -105,12 +131,6 @@ export const NAV_ITEMS: MegaMenuItem[] = [
         ],
       },
     ],
-    featured: {
-      title: 'Not sure where to start?',
-      description: 'Tell us what you need done and we will match you with verified operators.',
-      href: '/services/find',
-      cta: 'Find what you need',
-    },
   },
   {
     label: 'Drone',
@@ -264,7 +284,7 @@ export const NAV_ITEMS: MegaMenuItem[] = [
     label: 'Drone Software & Data',
     columns: [
       {
-        title: 'Software & Platforms',
+        title: 'Softwares & Platforms',
         links: [
           'Mapping software',
           'Flight planning software',

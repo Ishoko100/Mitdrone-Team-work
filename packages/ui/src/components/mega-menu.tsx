@@ -1,7 +1,24 @@
 'use client';
 
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
-import { ChevronDown, Menu } from 'lucide-react';
+import {
+  Battery,
+  Camera,
+  ChevronDown,
+  CircleDot,
+  Compass,
+  Crosshair,
+  Factory,
+  Gauge,
+  Map,
+  Menu,
+  Plane,
+  Radio,
+  Shield,
+  Sprout,
+  Truck,
+  Wrench,
+} from 'lucide-react';
 import { useState, type ElementType, type ReactNode } from 'react';
 
 import { cn } from '../lib/cn';
@@ -34,6 +51,7 @@ export interface MegaMenuItem {
   featured?: MegaMenuFeatured;
   iconSrc?: string;
   showChevron?: boolean;
+  categoryLayout?: boolean;
 }
 
 interface LinkLikeProps {
@@ -76,7 +94,10 @@ export function MegaMenu({ items, linkAs: L = 'a' }: { items: MegaMenuItem[]; li
                   {item.label}
                 </NavigationMenu.Trigger>
                 <NavigationMenu.Content>
-                  <div className="grid w-full gap-x-6 gap-y-8 p-6 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
+                  {item.categoryLayout ? (
+                    <CategoryPanel item={item} linkAs={L} />
+                  ) : (
+                    <div className="grid w-full gap-x-6 gap-y-8 p-6 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
                     {item.columns.map((column) => (
                       <div key={column.title}>
                         <p className="text-muted-foreground mb-2 text-xs font-semibold uppercase tracking-wide">
@@ -124,7 +145,8 @@ export function MegaMenu({ items, linkAs: L = 'a' }: { items: MegaMenuItem[]; li
                         </L>
                       </NavigationMenu.Link>
                     ) : null}
-                  </div>
+                    </div>
+                  )}
                 </NavigationMenu.Content>
               </>
             ) : (
@@ -141,6 +163,84 @@ export function MegaMenu({ items, linkAs: L = 'a' }: { items: MegaMenuItem[]; li
         <NavigationMenu.Viewport className="bg-popover text-popover-foreground shadow-pop relative mt-1 h-[var(--radix-navigation-menu-viewport-height)] w-[min(1040px,calc(100vw-2rem))] max-w-full origin-top overflow-visible rounded-xl border" />
       </div>
     </NavigationMenu.Root>
+  );
+}
+
+const categoryIcons = [
+  Camera,
+  Sprout,
+  Map,
+  Factory,
+  Shield,
+  Crosshair,
+  Truck,
+  Gauge,
+  Plane,
+  Radio,
+  CircleDot,
+  Battery,
+  Wrench,
+  Compass,
+];
+
+function CategoryPanel({ item, linkAs: L }: { item: MegaMenuItem; linkAs: LinkAs }) {
+  const columns = item.columns ?? [];
+  const [active, setActive] = useState(0);
+  const selected = columns[active] ?? columns[0];
+
+  return (
+    <div className="grid min-h-[360px] w-full grid-cols-[260px_1fr] overflow-hidden rounded-xl">
+      <div className="bg-muted/40 border-r p-3">
+        <p className="text-muted-foreground px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide">
+          Browse categories
+        </p>
+        <ul className="space-y-1">
+          {columns.map((column, index) => {
+            const Icon = categoryIcons[index] ?? CircleDot;
+            return (
+              <li key={column.title}>
+                <button
+                  type="button"
+                  onMouseEnter={() => setActive(index)}
+                  onFocus={() => setActive(index)}
+                  onClick={() => setActive(index)}
+                  className={cn(
+                    'flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-medium transition-colors',
+                    active === index ? 'bg-background text-primary shadow-sm' : 'hover:bg-background/70',
+                  )}
+                  aria-current={active === index ? 'true' : undefined}
+                >
+                  <Icon className="size-5 shrink-0" aria-hidden="true" />
+                  <span className="flex-1">{column.title}</span>
+                  <ChevronDown className="size-4 -rotate-90" aria-hidden="true" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div className="p-6">
+        <h2 className="mb-4 text-base font-semibold">{selected?.title}</h2>
+        <ul className="grid grid-cols-2 gap-2">
+          {selected?.links.map((link, index) => {
+            const Icon = categoryIcons[index + 1] ?? CircleDot;
+            return (
+              <li key={link.href + link.label}>
+                <NavigationMenu.Link asChild>
+                  <L
+                    href={link.href}
+                    className="hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
+                  >
+                    <Icon className="text-muted-foreground size-4 shrink-0" aria-hidden="true" />
+                    {link.label}
+                  </L>
+                </NavigationMenu.Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
   );
 }
 
