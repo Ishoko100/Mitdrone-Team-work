@@ -46,9 +46,16 @@ npm run build
 npm run test:e2e
 ```
 
+The E2E runner builds the three apps, then starts each production server in sequence. If ports 3000–3002 are already in use, choose a free consecutive range before running it. In PowerShell:
+
+```powershell
+$env:MITDRONE_E2E_PORT_BASE = '3100'
+npm run test:e2e
+```
+
 ## Mock and payment behavior
 
-Browser requests are handled by the MSW worker. Server-rendered marketplace requests use the in-process mock fetch adapter. Set `NEXT_PUBLIC_ENABLE_MOCKS=false` and point `NEXT_PUBLIC_API_URL` to the backend to use a real API. See [the backend handoff](docs/backend-handoff.md) before switching environments.
+Mock routing depends on the app runtime. Marketplace browser requests use the MSW worker, marketplace Server Component requests use the in-process mock fetch adapter, and vendor/admin dashboard browser SDK requests call the same mock fetch handler directly. This keeps dashboard mocks working when the SDK API URL uses another origin. Set `NEXT_PUBLIC_ENABLE_MOCKS=false` and point `NEXT_PUBLIC_API_URL` to the backend to use a real API. See [the backend handoff](docs/backend-handoff.md) before switching environments.
 
 The default `pk_test_mitdrone_mock` value selects the local mock card form. A real Stripe test publishable key selects Stripe Elements, which contacts Stripe to create a PaymentMethod; order confirmation remains mocked until the API is replaced. No live charge is made by this frontend demo.
 

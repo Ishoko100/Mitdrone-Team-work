@@ -42,7 +42,10 @@ export class AuthController {
     this.store = createTokenStore(options.storageKey ?? 'mitdrone.auth');
     this.allowedRoles = options.allowedRoles;
     this.onSessionExpired = options.onSessionExpired;
-    // Token interceptor + refresh hook for every SDK call.
+  }
+
+  /** Bind the shared SDK client to this live controller after React selects its instance. */
+  bindApiClient(): void {
     configureApiClient({
       getAccessToken: () => this.store.getAccess(),
       refreshAccessToken: async () => ((await this.refresh()) ? this.store.getAccess() : null),

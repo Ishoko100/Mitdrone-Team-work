@@ -4,8 +4,8 @@ test('customer checks out with the mock payment form', async ({ page }) => {
   await page.goto('/login');
   await page.getByLabel('Email').fill('ibrahim@mitdrone.test');
   await page.getByLabel('Password').fill('Password123!');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL('http://127.0.0.1:3000/account');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  await expect(page).toHaveURL(/\/account$/);
 
   await page.goto('/products', { waitUntil: 'domcontentloaded' });
   const addToCart = page.getByRole('button', { name: 'Add to cart' }).first();

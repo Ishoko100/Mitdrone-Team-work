@@ -6,6 +6,8 @@ test('admin approves a pending vendor', async ({ page }) => {
   await page.getByLabel('Password').fill('Password123!');
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page.getByRole('link', { name: /Dashboard/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Platform overview' })).toBeVisible();
+  await expect(page.getByText('Sign in to continue')).toHaveCount(0);
 
   await page.goto('/vendors?status=pending_review', { waitUntil: 'domcontentloaded' });
   const vendorRow = page.getByRole('row').filter({ hasText: 'NewWave Aviation' });

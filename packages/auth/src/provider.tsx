@@ -15,6 +15,10 @@ export function AuthProvider({ children, controller, ...options }: AuthProviderP
   const [ctrl] = useState(() => controller ?? new AuthController(options));
   const state = useSyncExternalStore(ctrl.subscribe, ctrl.getSnapshot, ctrl.getServerSnapshot);
 
+  // Do this for the controller React kept, rather than in its constructor: Strict Mode may
+  // invoke state initializers twice and discard one controller instance.
+  ctrl.bindApiClient();
+
   useEffect(() => {
     ctrl.attach();
     void ctrl.restore();

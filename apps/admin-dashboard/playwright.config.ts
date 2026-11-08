@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const port = process.env.MITDRONE_E2E_PORT ?? '3002';
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -10,13 +13,13 @@ export default defineConfig({
   expect: { timeout: 15_000 },
   workers: 1,
   use: {
-    baseURL: 'http://127.0.0.1:3002',
+    baseURL,
     trace: 'retain-on-failure',
     ...devices['Desktop Chrome'],
   },
   webServer: {
     command: 'npm run start',
-    url: 'http://127.0.0.1:3002',
+    url: baseURL,
     reuseExistingServer: process.env.MITDRONE_E2E_EXTERNAL_SERVER === 'true' || !process.env.CI,
     timeout: 120_000,
     stdout: 'ignore',

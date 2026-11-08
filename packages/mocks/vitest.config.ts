@@ -1,3 +1,7 @@
 import { defineConfig } from 'vitest/config';
+import { workspaceAliases } from '../config/vitest-aliases';
 
-export default defineConfig({ test: { environment: 'node', include: ['src/**/*.test.ts'] } });
+export default defineConfig({
+  resolve: { alias: workspaceAliases },
+  test: { environment: 'node', include: ['src/**/*.test.ts'] },
+});

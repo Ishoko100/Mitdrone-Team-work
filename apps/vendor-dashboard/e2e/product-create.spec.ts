@@ -6,6 +6,8 @@ test('approved vendor submits a product for review', async ({ page }) => {
   await page.getByLabel('Password').fill('Password123!');
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Welcome back/ })).toBeVisible();
+  await expect(page.getByText('Sign in to continue')).toHaveCount(0);
 
   await page.goto('/products/new', { waitUntil: 'domcontentloaded' });
   await page.getByLabel('Title').fill('Playwright Survey Drone');

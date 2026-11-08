@@ -35,6 +35,7 @@ const DRONES = [
   'Used Drones',
   'Refurbished Drones',
 ];
+
 const INDUSTRIES = [
   'Agriculture',
   'Construction',
@@ -134,9 +135,7 @@ export const NAV_ITEMS: MegaMenuItem[] = [
   },
   {
     label: 'Drone',
-    columns: [
-      { title: 'Drones', links: DRONES.map(cat) },
-    ],
+    columns: [{ title: 'Drones', links: DRONES.map(cat) }],
   },
   {
     label: 'Shop',

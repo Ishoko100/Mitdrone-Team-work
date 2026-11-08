@@ -1,1 +1,4 @@
-module.exports = { root: true, extends: [require.resolve('@mitdrone/config/eslint/next')] };
+module.exports = {
+  root: true,
+  extends: [require.resolve('../../packages/config/eslint/next.cjs')],
+};

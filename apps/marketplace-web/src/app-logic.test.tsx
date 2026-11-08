@@ -103,16 +103,18 @@ describe('navigation config', () => {
     ...(i.columns ?? []).flatMap((c) => c.links.map((l) => l.href)),
     ...(i.featured ? [i.featured.href] : []),
   ]);
-  it('contains the nine top-level items from the brief, in order', () => {
+  it('contains the current top-level navigation items in order', () => {
     expect(NAV_ITEMS.map((i) => i.label)).toEqual([
       'Categories',
+      'Drone',
       'Shop',
-      'Services',
-      'Rent',
       'Accessories',
       'Brands',
+      'Software & Data',
+      'Drone Services',
+      'Rent',
+      'Sell on Mitdrone',
       'Offers',
-      'Sell',
       'More',
     ]);
   });
@@ -206,7 +208,8 @@ describe('ProductCard', () => {
       `/products/${deal.slug}`,
     );
     expect(screen.getByText(vendor.name)).toBeInTheDocument();
-    expect(screen.getByText(/Save 10%/)).toBeInTheDocument();
+    const discount = Math.round((1 - deal.price.amount / deal.compareAtPrice!.amount) * 100);
+    expect(screen.getByText(`Save ${discount}%`)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /add to cart/i })).toBeEnabled();
   });
 });

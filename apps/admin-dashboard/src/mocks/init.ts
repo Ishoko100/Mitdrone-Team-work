@@ -3,16 +3,15 @@ import { configureApiClient } from '@mitdrone/sdk';
 import { env } from '@/lib/env';
 
 /**
- * Starts the MSW service worker in the browser. Every SDK request waits for it, so nothing
- * can reach the (nonexistent) backend before the mocks are registered.
+ * Handle API calls directly with the mock routes. A browser service worker only controls its
+ * own origin, while the API URL normally points at localhost:4000, so it cannot reliably mock
+ * those cross-origin requests.
  */
-let ready: Promise<void> = Promise.resolve();
-
 if (typeof window !== 'undefined' && env.NEXT_PUBLIC_ENABLE_MOCKS === 'true') {
-  ready = import('@mitdrone/mocks/browser')
-    .then(({ worker }) => worker.start({ onUnhandledRequest: 'bypass', quiet: true }))
-    .then(() => undefined);
-  configureApiClient({ fetch: (input, init) => ready.then(() => fetch(input, init)) });
+  configureApiClient({
+    fetch: async (input, init) => {
+      const { mockFetch } = await import('@mitdrone/mocks/fetch');
+      return mockFetch(input, init);
+    },
+  });
 }
-
-export const mocksReady = ready;

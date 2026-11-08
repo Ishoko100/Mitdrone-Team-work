@@ -71,7 +71,10 @@ export function ProductCard({
             <p className="flex min-w-0 items-center gap-1">
               <span className="truncate">{product.vendor.name}</span>
               {product.vendor.verified ? (
-                <BadgeCheck className="text-primary size-3.5 shrink-0" aria-label="Verified seller" />
+                <BadgeCheck
+                  className="text-primary size-3.5 shrink-0"
+                  aria-label="Verified seller"
+                />
               ) : null}
             </p>
           ) : null}

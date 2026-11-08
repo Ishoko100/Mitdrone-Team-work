@@ -12,6 +12,7 @@ if (process.env.MITDRONE_E2E_SKIP_BUILD !== 'true') {
     resolve(root, 'node_modules/turbo/bin/turbo'),
     'run',
     'build',
+    '--concurrency=1',
   ]);
   if (build.status !== 0) process.exit(build.status ?? 1);
 }
@@ -21,6 +22,8 @@ const apps = [
   { name: 'Vendor dashboard', path: 'apps/vendor-dashboard', port: 3001 },
   { name: 'Admin dashboard', path: 'apps/admin-dashboard', port: 3002 },
 ];
+const portBase = Number(process.env.MITDRONE_E2E_PORT_BASE ?? 3000);
+apps.forEach((app, index) => (app.port = portBase + index));
 const selectedApps = process.env.MITDRONE_E2E_APP
   ? apps.filter((app) => app.path.endsWith(process.env.MITDRONE_E2E_APP))
   : apps;
@@ -76,7 +79,11 @@ for (const app of selectedApps) {
       [resolve(root, 'node_modules/@playwright/test/cli.js'), 'test'],
       {
         cwd,
-        env: { ...process.env, MITDRONE_E2E_EXTERNAL_SERVER: 'true' },
+        env: {
+          ...process.env,
+          MITDRONE_E2E_EXTERNAL_SERVER: 'true',
+          MITDRONE_E2E_PORT: String(app.port),
+        },
       },
     );
     if (result.status !== 0)

@@ -78,7 +78,7 @@ export function MegaMenu({ items, linkAs: L = 'a' }: { items: MegaMenuItem[]; li
                 <NavigationMenu.Trigger className={cn(triggerClass, 'group')}>
                   {item.iconSrc ? (
                     <span
-                      className="mr-1 size-4 bg-current [mask-size:contain] [mask-position:center] [mask-repeat:no-repeat]"
+                      className="mr-1 size-4 bg-current [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain]"
                       style={{
                         maskImage: `url(${item.iconSrc})`,
                         WebkitMaskImage: `url(${item.iconSrc})`,
@@ -98,53 +98,53 @@ export function MegaMenu({ items, linkAs: L = 'a' }: { items: MegaMenuItem[]; li
                     <CategoryPanel item={item} linkAs={L} />
                   ) : (
                     <div className="grid w-full gap-x-6 gap-y-8 p-6 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
-                    {item.columns.map((column) => (
-                      <div key={column.title}>
-                        <p className="text-muted-foreground mb-2 text-xs font-semibold uppercase tracking-wide">
-                          {column.title}
-                        </p>
-                        <ul className="space-y-0.5">
-                          {column.links.map((link) => (
-                            <li key={link.href + link.label}>
-                              <NavigationMenu.Link asChild>
-                                <L
-                                  href={link.href}
-                                  className="hover:bg-accent hover:text-accent-foreground flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
-                                >
-                                  <span>
-                                    {link.label}
-                                    {link.description ? (
-                                      <span className="text-muted-foreground block text-xs">
-                                        {link.description}
+                      {item.columns.map((column) => (
+                        <div key={column.title}>
+                          <p className="text-muted-foreground mb-2 text-xs font-semibold uppercase tracking-wide">
+                            {column.title}
+                          </p>
+                          <ul className="space-y-0.5">
+                            {column.links.map((link) => (
+                              <li key={link.href + link.label}>
+                                <NavigationMenu.Link asChild>
+                                  <L
+                                    href={link.href}
+                                    className="hover:bg-accent hover:text-accent-foreground flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
+                                  >
+                                    <span>
+                                      {link.label}
+                                      {link.description ? (
+                                        <span className="text-muted-foreground block text-xs">
+                                          {link.description}
+                                        </span>
+                                      ) : null}
+                                    </span>
+                                    {link.badge ? (
+                                      <span className="bg-primary/10 text-accent-foreground rounded-full px-2 py-0.5 text-[11px] font-medium">
+                                        {link.badge}
                                       </span>
                                     ) : null}
-                                  </span>
-                                  {link.badge ? (
-                                    <span className="bg-primary/10 text-accent-foreground rounded-full px-2 py-0.5 text-[11px] font-medium">
-                                      {link.badge}
-                                    </span>
-                                  ) : null}
-                                </L>
-                              </NavigationMenu.Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                    {item.featured ? (
-                      <NavigationMenu.Link asChild>
-                        <L
-                          href={item.featured.href}
-                          className="bg-accent text-accent-foreground hover:bg-accent/70 flex flex-col justify-end gap-1 rounded-lg p-4 transition-colors"
-                        >
-                          <span className="font-semibold">{item.featured.title}</span>
-                          <span className="text-sm opacity-80">{item.featured.description}</span>
-                          <span className="mt-2 text-sm font-medium underline underline-offset-4">
-                            {item.featured.cta}
-                          </span>
-                        </L>
-                      </NavigationMenu.Link>
-                    ) : null}
+                                  </L>
+                                </NavigationMenu.Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                      {item.featured ? (
+                        <NavigationMenu.Link asChild>
+                          <L
+                            href={item.featured.href}
+                            className="bg-accent text-accent-foreground hover:bg-accent/70 flex flex-col justify-end gap-1 rounded-lg p-4 transition-colors"
+                          >
+                            <span className="font-semibold">{item.featured.title}</span>
+                            <span className="text-sm opacity-80">{item.featured.description}</span>
+                            <span className="mt-2 text-sm font-medium underline underline-offset-4">
+                              {item.featured.cta}
+                            </span>
+                          </L>
+                        </NavigationMenu.Link>
+                      ) : null}
                     </div>
                   )}
                 </NavigationMenu.Content>
@@ -206,7 +206,9 @@ function CategoryPanel({ item, linkAs: L }: { item: MegaMenuItem; linkAs: LinkAs
                   onClick={() => setActive(index)}
                   className={cn(
                     'flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-medium transition-colors',
-                    active === index ? 'bg-background text-primary shadow-sm' : 'hover:bg-background/70',
+                    active === index
+                      ? 'bg-background text-primary shadow-sm'
+                      : 'hover:bg-background/70',
                   )}
                   aria-current={active === index ? 'true' : undefined}
                 >

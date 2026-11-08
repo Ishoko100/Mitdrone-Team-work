@@ -19,14 +19,7 @@ import Link from 'next/link';
 import { ProductGrid } from '@/components/product/product-card';
 import { RatingStars } from '@/components/product/rating-stars';
 
-
-import type {
-  Category,
-  LiveSession,
-  Manufacturer,
-  Product,
-  ServiceListing
-} from '@mitdrone/types';
+import type { Category, LiveSession, Manufacturer, Product, ServiceListing } from '@mitdrone/types';
 import type { ReactNode } from 'react';
 
 export function SectionHeader({
@@ -65,11 +58,13 @@ export function Hero() {
       <div className="container grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-16">
         <div className="relative z-10 space-y-6">
           <Badge className="marketplace-hero-badge gap-1.5 rounded-full px-3 py-1">
-            <ShieldCheck className="size-3.5" aria-hidden="true" /> Verified sellers · Buyer protection
+            <ShieldCheck className="size-3.5" aria-hidden="true" /> Verified sellers · Buyer
+            protection
           </Badge>
           <div className="space-y-4">
             <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Find the right drone for <span className="marketplace-hero-highlight">the work ahead.</span>
+              Find the right drone for{' '}
+              <span className="marketplace-hero-highlight">the work ahead.</span>
             </h1>
             <p className="text-muted-foreground max-w-xl text-base leading-relaxed sm:text-lg">
               Shop drones, equipment and services for mapping, agriculture, inspection and more.
@@ -96,7 +91,7 @@ export function Hero() {
             className="relative z-10 object-cover"
           />
           <div className="marketplace-hero-float marketplace-hero-float-top absolute left-4 top-4 z-20 flex items-center gap-2 rounded-2xl border px-3 py-2.5 shadow-lg backdrop-blur-md sm:left-6 sm:top-6">
-            <span className="bg-emerald-400/15 text-emerald-300 flex size-9 items-center justify-center rounded-xl">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-400/15 text-emerald-300">
               <BadgeCheck className="size-5" aria-hidden="true" />
             </span>
             <span>
@@ -377,8 +372,8 @@ export function TrustedBrandsStrip() {
         title="Trusted Drone Brands"
         description="The names shaping the future of flight."
       />
-      <div className="relative isolate overflow-hidden rounded-3xl border bg-gradient-to-br from-card via-muted/50 to-primary/10 px-5 py-10 shadow-sm sm:px-8">
-        <div className="pointer-events-none absolute -left-16 -top-20 size-56 rounded-full bg-primary/10 blur-3xl" />
+      <div className="from-card via-muted/50 to-primary/10 relative isolate overflow-hidden rounded-3xl border bg-gradient-to-br px-5 py-10 shadow-sm sm:px-8">
+        <div className="bg-primary/10 pointer-events-none absolute -left-16 -top-20 size-56 rounded-full blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 right-0 size-64 rounded-full bg-sky-400/10 blur-3xl" />
         <div className="brand-marquee">
           <div className="brand-marquee-track">
@@ -391,7 +386,7 @@ export function TrustedBrandsStrip() {
                 {TRUSTED_BRANDS.map((brand) => (
                   <li
                     key={brand.name}
-                    className="bg-background/85 text-foreground/85 flex min-h-20 min-w-36 items-center justify-center gap-1 rounded-2xl border border-border/70 px-5 py-4 text-center shadow-lg shadow-black/5 backdrop-blur-sm sm:min-h-24 sm:min-w-40"
+                    className="bg-background/85 text-foreground/85 border-border/70 flex min-h-20 min-w-36 items-center justify-center gap-1 rounded-2xl border px-5 py-4 text-center shadow-lg shadow-black/5 backdrop-blur-sm sm:min-h-24 sm:min-w-40"
                     aria-label={isDuplicate ? undefined : brand.name}
                   >
                     <span className={brand.style}>{brand.name}</span>

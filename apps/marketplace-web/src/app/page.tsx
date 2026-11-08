@@ -11,13 +11,7 @@ import {
   TrustBar,
   TrustedBrandsStrip,
 } from '@/components/home/sections';
-import {
-  getCategories,
-  getManufacturers,
-  getProducts,
-  getServices,
-  getVendors,
-} from '@/lib/data';
+import { getCategories, getManufacturers, getProducts, getServices, getVendors } from '@/lib/data';
 import { env } from '@/lib/env';
 import { jsonLdString } from '@/lib/seo';
 
@@ -28,16 +22,17 @@ export const revalidate = 60;
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 export default async function HomePage() {
-  const [deals, featured, equipment, accessories, categories, services, manufacturers] = await Promise.all([
-    getProducts({ deal: true, pageSize: 5 }),
-    getProducts({ featured: true, kind: 'drone', pageSize: 10 }),
-    getProducts({ kind: 'equipment', pageSize: 5 }),
-    getProducts({ kind: 'accessory', pageSize: 5 }),
-    getCategories(),
-    getServices({ pageSize: 4 }),
-    getManufacturers({ nigerian: true, pageSize: 3 }),
-    getVendors({ pageSize: 4 }),
-  ]);
+  const [deals, featured, equipment, accessories, categories, services, manufacturers] =
+    await Promise.all([
+      getProducts({ deal: true, pageSize: 5 }),
+      getProducts({ featured: true, kind: 'drone', pageSize: 10 }),
+      getProducts({ kind: 'equipment', pageSize: 5 }),
+      getProducts({ kind: 'accessory', pageSize: 5 }),
+      getCategories(),
+      getServices({ pageSize: 4 }),
+      getManufacturers({ nigerian: true, pageSize: 3 }),
+      getVendors({ pageSize: 4 }),
+    ]);
 
   const website = {
     '@context': 'https://schema.org',
