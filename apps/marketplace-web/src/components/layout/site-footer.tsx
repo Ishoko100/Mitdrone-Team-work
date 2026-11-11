@@ -6,7 +6,7 @@ import { Logo } from './logo';
 
 export function SiteFooter() {
   return (
-    <footer className="bg-muted/40 mt-24 border-t">
+    <footer className="marketplace-footer mt-24 border-t">
       <div className="container grid gap-10 py-12 lg:grid-cols-[1.2fr_3fr]">
         <div className="space-y-3">
           <Logo />

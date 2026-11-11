@@ -11,7 +11,7 @@ body.marketplace-theme {
   --card-foreground: 207 61% 18%;
   --popover: 0 0% 100%;
   --popover-foreground: 207 61% 18%;
-  --primary: 221 83% 51%;
+  --primary: 173 76% 29%;
   --primary-foreground: 0 0% 100%;
   --secondary: 207 35% 94%;
   --secondary-foreground: 207 55% 20%;
@@ -21,7 +21,10 @@ body.marketplace-theme {
   --accent-foreground: 186 78% 21%;
   --border: 208 35% 88%;
   --input: 208 22% 66%;
-  --ring: 221 83% 51%;
+  --ring: 173 76% 29%;
+  --marketplace-footer: 173 78% 20%;
+  --marketplace-footer-muted: 173 25% 82%;
+  --marketplace-footer-border: 173 55% 30%;
 }
 
 html.dark body.marketplace-theme {
@@ -31,8 +34,8 @@ html.dark body.marketplace-theme {
   --card-foreground: 210 25% 96%;
   --popover: 208 60% 12%;
   --popover-foreground: 210 25% 96%;
-  --primary: 209 100% 70%;
-  --primary-foreground: 211 53% 9%;
+  --primary: 173 62% 43%;
+  --primary-foreground: 0 0% 100%;
   --secondary: 208 35% 17%;
   --secondary-foreground: 210 25% 94%;
   --muted: 208 35% 16%;
@@ -41,7 +44,28 @@ html.dark body.marketplace-theme {
   --accent-foreground: 184 75% 80%;
   --border: 208 30% 21%;
   --input: 208 20% 42%;
-  --ring: 209 100% 70%;
+  --ring: 173 62% 43%;
+  --marketplace-footer: 173 70% 13%;
+  --marketplace-footer-muted: 173 25% 78%;
+  --marketplace-footer-border: 173 55% 24%;
+}
+
+.marketplace-footer {
+  border-color: hsl(var(--marketplace-footer-border));
+  background-color: hsl(var(--marketplace-footer));
+  color: hsl(0 0% 100%);
+}
+
+.marketplace-footer .text-muted-foreground {
+  color: hsl(var(--marketplace-footer-muted));
+}
+
+.marketplace-footer a:hover {
+  color: hsl(0 0% 100%);
+}
+
+.marketplace-footer a:hover.bg-accent {
+  background-color: hsl(var(--marketplace-footer-border));
 }
 
 .marketplace-hero {
