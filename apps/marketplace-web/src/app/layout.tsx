@@ -1,14 +1,14 @@
 import '@mitdrone/ui/styles.css';
 import './globals.css';
 
-import { SiteFooter } from '@/components/layout/site-footer';
-import { SiteHeader } from '@/components/layout/site-header';
 import { env } from '@/lib/env';
 
 import { Providers } from './providers';
 
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+
+import { MarketplaceChrome } from './marketplace-chrome';
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -43,11 +43,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <Providers>
-          <SiteHeader />
-          <main id="main" tabIndex={-1} className="outline-none">
-            {children}
-          </main>
-          <SiteFooter />
+          <MarketplaceChrome>
+            <main id="main" tabIndex={-1} className="outline-none">
+              {children}
+            </main>
+          </MarketplaceChrome>
         </Providers>
       </body>
     </html>

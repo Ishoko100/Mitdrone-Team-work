@@ -35,6 +35,9 @@ export const registerSchema = z
     confirmPassword: z.string(),
     referralCode: z.string().optional(),
     accountType: z.enum(['customer', 'vendor']).default('customer'),
+    vendorType: z
+      .enum(['individual_seller', 'dealer', 'manufacturer', 'service_provider', 'renter'])
+      .optional(),
   })
   .refine((v) => v.password === v.confirmPassword, {
     path: ['confirmPassword'],

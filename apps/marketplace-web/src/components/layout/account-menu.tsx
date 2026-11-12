@@ -16,15 +16,16 @@ import {
 } from '@mitdrone/ui';
 import { initials } from '@mitdrone/utils';
 import {
-  BriefcaseBusiness,
-  ChevronRight,
   Gift,
   Heart,
   LogOut,
   Package,
-  ShoppingBag,
+  PackageCheck,
+  RotateCcw,
+  Settings,
   Store,
   User,
+  UserRound,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -43,111 +44,92 @@ export function AccountMenu() {
       <DropdownMenu open={guestMenuOpen} onOpenChange={setGuestMenuOpen}>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="outline"
-            size="sm"
-            className="border-primary bg-primary hover:bg-primary/90 text-white hover:text-white"
+            variant="ghost"
+            className="h-auto gap-2 px-2 py-1 text-left hover:bg-transparent"
             onMouseEnter={() => setGuestMenuOpen(true)}
           >
-            Sign in/Register
+            <UserRound className="size-6 shrink-0" />
+            <span className="flex flex-col leading-tight">
+              <span className="text-xs font-normal">Welcome</span>
+              <span className="text-xs font-semibold">Sign in / Register</span>
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          sideOffset={0}
-          className="w-[min(22rem,calc(100vw-2rem))] p-0"
+          sideOffset={4}
+          className="w-[min(19rem,calc(100vw-1rem))] max-h-[calc(100vh-5rem)] overflow-y-auto rounded-3xl border-0 bg-white p-4 text-[#222] shadow-xl dark:bg-white dark:text-[#222]"
           onMouseEnter={() => setGuestMenuOpen(true)}
           onMouseLeave={() => setGuestMenuOpen(false)}
         >
-          <div className="space-y-3 p-4">
-            <div>
-              <p className="font-semibold">Welcome to MITDRONE</p>
-              <p className="text-muted-foreground mt-1 text-xs">
-                Sign in to your account or create a new one.
-              </p>
-            </div>
-            <Button asChild className="w-full">
-              <Link href="/login">
-                <User className="mr-2 size-4" />
-                Sign In
-              </Link>
+          <div className="space-y-0.5 pb-3">
+            <Button
+              asChild
+              className="h-12 w-full rounded-full bg-primary text-base font-semibold text-white shadow-none hover:bg-[hsl(173,76%,23%)]"
+            >
+              <Link href="/login">Sign in</Link>
             </Button>
-            <div className="border-t pt-3">
-              <p className="mb-2 text-sm font-semibold">Create an account</p>
-              <p className="text-muted-foreground mb-2 text-xs">
-                Choose how you want to use MITDRONE.
-              </p>
-              <div className="space-y-1">
-                <Link
-                  href="/register"
-                  className="hover:bg-accent flex items-center gap-3 rounded-md p-2"
-                >
-                  <span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
-                    <ShoppingBag className="size-4" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium">Buyer</span>
-                    <span className="text-muted-foreground block text-xs">
-                      Discover and purchase drones, accessories and services.
-                    </span>
-                  </span>
-                  <ChevronRight className="text-muted-foreground size-4" />
-                </Link>
-                <a
-                  href={`${env.NEXT_PUBLIC_VENDOR_URL}/register?type=seller`}
-                  className="hover:bg-accent flex items-center gap-3 rounded-md p-2"
-                >
-                  <span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
-                    <Store className="size-4" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium">Vendor</span>
-                    <span className="text-muted-foreground block text-xs">
-                      List and sell drones, spare parts and accessories.
-                    </span>
-                  </span>
-                  <ChevronRight className="text-muted-foreground size-4" />
-                </a>
-                <a
-                  href={`${env.NEXT_PUBLIC_VENDOR_URL}/register?type=service_provider`}
-                  className="hover:bg-accent flex items-center gap-3 rounded-md p-2"
-                >
-                  <span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
-                    <BriefcaseBusiness className="size-4" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium">Service Provider</span>
-                    <span className="text-muted-foreground block text-xs">
-                      Offer professional drone services and receive bookings.
-                    </span>
-                  </span>
-                  <ChevronRight className="text-muted-foreground size-4" />
-                </a>
-              </div>
-            </div>
-            <div className="flex justify-between border-t pt-2">
+            <Link
+              href="/register"
+              className="flex items-center justify-center h-9 rounded-full text-center text-sm text-[#777] hover:text-[#171717] hover:bg-primary/20"
+            >
+              Register
+            </Link>
+          </div>
+          <DropdownMenuSeparator className="my-2 bg-[#e5e5e5]" />
+          <nav aria-label="Account links" className="space-y-0.5 py-1">
+            <DropdownMenuItem asChild>
               <Link
                 href="/account/orders"
-                className="hover:text-primary flex items-center gap-1.5 text-xs"
+                className="h-10 rounded-md px-2.5 text-[15px] text-[#454545] focus:bg-[#f3f3f3] focus:text-[#171717]"
               >
-                <Package className="size-3.5" />
-                My Orders
+                <Package /> My Orders
               </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href="/wishlist"
+                className="h-10 rounded-md px-2.5 text-[15px] text-[#454545] focus:bg-[#f3f3f3] focus:text-[#171717]"
+              >
+                <Heart /> Wish List
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link
                 href="/support/track-order"
-                className="hover:text-primary flex items-center gap-1.5 text-xs"
+                className="h-10 rounded-md px-2.5 text-[15px] text-[#454545] focus:bg-[#f3f3f3] focus:text-[#171717]"
               >
-                <Package className="size-3.5" />
-                Track Order
+                <PackageCheck /> Track My Orders
               </Link>
+            </DropdownMenuItem>
+          </nav>
+          <DropdownMenuSeparator className="my-2 bg-[#e5e5e5]" />
+          <nav aria-label="More account links" className="space-y-0.5 py-1">
+            <DropdownMenuItem asChild>
               <Link
                 href="/account"
-                className="hover:text-primary flex items-center gap-1.5 text-xs"
+                className="h-10 rounded-md px-2.5 text-[15px] text-[#777] focus:bg-[#f3f3f3] focus:text-[#171717]"
               >
-                <Heart className="size-3.5" />
-                Wishlist
+                <Settings /> Settings
               </Link>
-            </div>
-          </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a
+                href={`${env.NEXT_PUBLIC_VENDOR_URL}/login`}
+                className="h-10 rounded-md px-2.5 text-[15px] text-[#777] focus:bg-[#f3f3f3] focus:text-[#171717]"
+              >
+                <Store /> Seller Log in
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href="/support/returns"
+                className="h-10 rounded-md px-2.5 text-[15px] text-[#777] focus:bg-[#f3f3f3] focus:text-[#171717]"
+              >
+                <RotateCcw /> Return &amp; refund policy
+              </Link>
+            </DropdownMenuItem>
+          </nav>
         </DropdownMenuContent>
       </DropdownMenu>
     );

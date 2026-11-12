@@ -59,8 +59,11 @@ export const authHandlers = [
       db.vendors.push({
         id: vId,
         slug: slugify(`${input.name}-${vId}`),
-        name: `${input.name}'s Store`,
-        type: 'individual_seller',
+        name:
+          input.vendorType === 'service_provider'
+            ? `${input.name}'s Services`
+            : `${input.name}'s Store`,
+        type: input.vendorType ?? 'individual_seller',
         status: 'draft',
         description: '',
         email,
