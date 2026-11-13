@@ -51,9 +51,10 @@ async function simulate(request: Request): Promise<void> {
   }
 }
 
-/** Registers a handler for `${anyOrigin}${API_PREFIX}${path}`. Return data, a Response, or throw ApiError. */
-export function route(method: Method, path: string, resolver: Resolver) {
-  return http[method](`*${API_PREFIX}${path}`, async ({ request, params }) => {
+/** Registers a handler for `${anyOrigin}${prefix}${path}`. Default prefix is API_PREFIX. */
+export function route(method: Method, path: string, resolver: Resolver, prefix?: string) {
+  const base = prefix ?? API_PREFIX;
+  return http[method](`*${base}${path}`, async ({ request, params }) => {
     try {
       await simulate(request);
       const out = await resolver({
@@ -130,6 +131,14 @@ export const includesText = (haystack: string[], q: string | null): boolean =>
 /* ------------------------------------------------------------------ auth */
 
 export function currentUser(request: Request): User | null {
+  const sessionId = request.headers
+    .get('cookie')
+    ?.split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith('mitdrone_session='))
+    ?.slice('mitdrone_session='.length);
+  if (sessionId)
+    return getDb().users.find((user) => user.id === decodeURIComponent(sessionId)) ?? null;
   const header = request.headers.get('authorization');
   if (!header?.startsWith('Bearer ')) return null;
   const token = header.slice(7);

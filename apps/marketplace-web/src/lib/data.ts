@@ -6,7 +6,7 @@ import { cache } from 'react';
 
 import { REVALIDATE_SECONDS, serverApi } from './server-api';
 
-import type { ContentSection, PageParams } from '@mitdrone/types';
+import type { ContentSection, PageParams, HealthLiveResponse, RegistrationTermsResponse } from '@mitdrone/types';
 
 const next = { revalidate: REVALIDATE_SECONDS };
 
@@ -64,3 +64,67 @@ export const getContentPages = cache(async (section?: ContentSection) =>
 export const getContentPage = cache(async (slug: string) =>
   orNotFound((await serverApi()).content.page(slug, { next })),
 );
+
+/* ------------------------------------------------------------------ backend */
+export const getBackendHealthLive = async (): Promise<HealthLiveResponse | undefined> => {
+  try {
+    return (await serverApi()).backend.health.live();
+  } catch {
+    return undefined;
+  }
+};
+
+export const getBackendHealthReady = async (): Promise<boolean> => {
+  try {
+    await (await serverApi()).backend.health.ready();
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const getBackendRegistrationTerms = async (): Promise<
+  RegistrationTermsResponse | undefined
+> => {
+  try {
+    return (await serverApi()).backend.auth.registrationTerms();
+  } catch {
+    return undefined;
+  }
+};
+
+export const getBackendCatalogOffers = async (query: {
+  mode?: 'SALE' | 'RENTAL';
+  page?: number;
+  limit?: number;
+} = {}) => {
+  return (await serverApi()).backend.catalog.offers(query);
+};
+
+export const getBackendOfferAvailability = async (
+  offerId: string,
+  query?: { startsAt?: string; endsAt?: string },
+) => {
+  return (await serverApi()).backend.catalog.availability(offerId, query);
+};
+
+export const getBackendOrganizations = async (query: {
+  page?: number;
+  limit?: number;
+} = {}) => {
+  return (await serverApi()).backend.organizations.list(query);
+};
+
+export const getBackendReservations = async (query: {
+  page?: number;
+  limit?: number;
+} = {}) => {
+  return (await serverApi()).backend.reservations.list(query);
+};
+
+export const getBackendOrders = async (query: {
+  page?: number;
+  limit?: number;
+} = {}) => {
+  return (await serverApi()).backend.orders.list(query);
+};

@@ -59,7 +59,8 @@ Mock routing depends on the app runtime. Marketplace browser requests use the MS
 
 The default `pk_test_mitdrone_mock` value selects the local mock card form. A real Stripe test publishable key selects Stripe Elements, which contacts Stripe to create a PaymentMethod; order confirmation remains mocked until the API is replaced. No live charge is made by this frontend demo.
 
-Mock JWTs are not a security boundary. Browser MSW cannot access server-only `NEXTAUTH_SECRET`, so browser-issued demo tokens use a public fallback signing key. The backend must issue and verify production tokens and set them in httpOnly cookies.
+Mock authentication is not a security boundary. The backend must issue and verify production
+sessions using the documented HTTP-only cookie; no session credentials belong in Web Storage.
 
 ## API contract
 

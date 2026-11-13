@@ -1,13 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@mitdrone/auth';
-import { api } from '@mitdrone/sdk';
-import { registerSchema, type RegisterRequest } from '@mitdrone/types';
+import { api, getErrorMessage } from '@mitdrone/sdk';
+import { registerSchema, type RegisterRequest, type RegistrationTerms } from '@mitdrone/types';
 import { Button, Form, toast } from '@mitdrone/ui';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 
 import { RootError, TextField } from '@/components/forms/fields';
@@ -19,23 +18,83 @@ import type { z } from 'zod';
 type Input = z.input<typeof registerSchema>;
 
 export function RegisterForm() {
-  const { register } = useAuth();
   const [profile, setProfile] = useState<'buyer' | 'vendor' | 'service_provider'>('buyer');
+  const [terms, setTerms] = useState<RegistrationTerms | null>(null);
+  const [termsError, setTermsError] = useState<string>();
+  const [waitingForVerification, setWaitingForVerification] = useState(false);
+  const [resending, setResending] = useState(false);
   const params = useSearchParams();
   const next = params.get('next');
   const form = useForm<Input, unknown, RegisterRequest>({
     resolver: zodResolver(registerSchema) as unknown as Resolver<Input, unknown, RegisterRequest>,
     defaultValues: {
-      name: '',
       email: '',
+      acceptedTerms: false,
+      termsVersion: '',
+      fullName: '',
       phone: '',
       password: '',
       confirmPassword: '',
-      referralCode: params.get('ref') ?? '',
-      accountType: 'customer',
-      vendorType: undefined,
     },
   });
+
+  useEffect(() => {
+    let active = true;
+    void api.auth
+      .registrationTerms()
+      .then((result) => {
+        if (!active) return;
+        setTerms(result);
+        const key =
+          profile === 'service_provider'
+            ? 'serviceProvider'
+            : profile === 'vendor'
+              ? 'vendor'
+              : 'buyer';
+        form.setValue('termsVersion', result[key]);
+      })
+      .catch((error: unknown) => {
+        if (active) setTermsError(getErrorMessage(error, 'Could not load the current terms.'));
+      });
+    return () => {
+      active = false;
+    };
+  }, [form, profile]);
+
+  if (waitingForVerification) {
+    return (
+      <div className="space-y-4" role="status">
+        <h1 className="text-2xl font-semibold tracking-tight">Verify your email</h1>
+        <p className="text-muted-foreground text-sm">
+          We accepted your registration. Check {form.getValues('email')} for the verification email
+          before signing in.
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          loading={resending}
+          onClick={async () => {
+            setResending(true);
+            try {
+              await api.auth.resendVerification({ email: form.getValues('email') });
+              toast.success('If the account can be verified, a new email will be sent.');
+            } catch (error) {
+              toast.error(getErrorMessage(error));
+            } finally {
+              setResending(false);
+            }
+          }}
+        >
+          Resend verification email
+        </Button>
+        <p className="text-center text-sm">
+          <Link href="/login" className="text-primary font-medium hover:underline">
+            Back to sign in
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -45,16 +104,18 @@ export function RegisterForm() {
           {profile === 'buyer'
             ? 'Buy, rent and hire with Buyer Protection on every order.'
             : profile === 'vendor'
-              ? 'Create a vendor profile to list and sell products on Mitdrone.'
-              : 'Create a service provider profile to offer drone services on Mitdrone.'}
+              ? 'Create your account, verify your email, then submit a separate vendor application.'
+              : 'Create your account, verify your email, then submit a separate service provider application.'}
         </p>
       </div>
       <div className="grid grid-cols-3 rounded-full border p-1 text-center text-sm">
-        {([
-          ['buyer', 'Buyer'],
-          ['vendor', 'Vendor'],
-          ['service_provider', 'Service Provider'],
-        ] as const).map(([value, label]) => (
+        {(
+          [
+            ['buyer', 'Buyer'],
+            ['vendor', 'Vendor'],
+            ['service_provider', 'Service Provider'],
+          ] as const
+        ).map(([value, label]) => (
           <button
             key={value}
             type="button"
@@ -62,15 +123,13 @@ export function RegisterForm() {
             className={`rounded-full px-2 py-2 font-medium transition-colors ${profile === value ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'}`}
             onClick={() => {
               setProfile(value);
-              form.setValue('accountType', value === 'buyer' ? 'customer' : 'vendor');
-              form.setValue(
-                'vendorType',
-                value === 'vendor'
-                  ? 'individual_seller'
-                  : value === 'service_provider'
-                    ? value
-                    : undefined,
-              );
+              const termsKey =
+                value === 'service_provider'
+                  ? 'serviceProvider'
+                  : value === 'vendor'
+                    ? 'vendor'
+                    : 'buyer';
+              form.setValue('termsVersion', terms?.[termsKey] ?? '');
             }}
           >
             {label}
@@ -83,24 +142,15 @@ export function RegisterForm() {
           noValidate
           onSubmit={form.handleSubmit(async (values) => {
             try {
-              if (profile === 'buyer') {
-                await register(values);
-                toast.success('Account created. Welcome to Mitdrone!');
-              } else {
-                await api.auth.register(values);
-                toast.success(
-                  profile === 'vendor'
-                    ? 'Vendor profile created. Sign in from Seller Log in to continue setup.'
-                    : 'Service provider profile created. Sign in from Seller Log in to continue setup.',
-                );
-              }
+              await api.auth.register(values);
+              setWaitingForVerification(true);
             } catch (error) {
               applyApiError(form, error);
             }
           })}
         >
           <RootError message={form.formState.errors.root?.message} />
-          <TextField control={form.control} name="name" label="Full name" autoComplete="name" />
+          <TextField control={form.control} name="fullName" label="Full name" autoComplete="name" />
           <TextField
             control={form.control}
             name="email"
@@ -111,7 +161,7 @@ export function RegisterForm() {
           <TextField
             control={form.control}
             name="phone"
-            label="Phone (optional)"
+            label="Phone"
             type="tel"
             autoComplete="tel"
             inputMode="tel"
@@ -131,13 +181,39 @@ export function RegisterForm() {
             type="password"
             autoComplete="new-password"
           />
-          <TextField control={form.control} name="referralCode" label="Referral code (optional)" />
-          <Button type="submit" className="w-full" loading={form.formState.isSubmitting}>
-            {profile === 'buyer'
-              ? 'Create account'
-              : profile === 'vendor'
-                ? 'Create vendor account'
-                : 'Create service provider account'}
+          <label className="flex items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="accent-primary mt-1 size-4"
+              checked={form.watch('acceptedTerms')}
+              onChange={(event) =>
+                form.setValue('acceptedTerms', event.currentTarget.checked, {
+                  shouldValidate: true,
+                })
+              }
+            />
+            <span>
+              I accept the current Mitdrone terms of service and privacy policy.
+              {terms ? (
+                <span className="text-muted-foreground block text-xs">
+                  Terms version: {form.watch('termsVersion')}
+                </span>
+              ) : null}
+              {form.formState.errors.acceptedTerms?.message ? (
+                <span className="text-destructive block text-xs">
+                  {form.formState.errors.acceptedTerms.message}
+                </span>
+              ) : null}
+            </span>
+          </label>
+          {termsError ? <RootError message={termsError} /> : null}
+          <Button
+            type="submit"
+            className="w-full"
+            loading={form.formState.isSubmitting}
+            disabled={!terms || Boolean(termsError)}
+          >
+            Create account
           </Button>
         </form>
       </Form>

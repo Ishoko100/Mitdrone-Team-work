@@ -12,6 +12,14 @@ export function setMockConfig(partial: Partial<MockConfig>): void {
 }
 
 /**
+ * Mock-only CSRF token. The live backend requires `x-csrf-token` on authenticated
+ * mutations but does not document how the frontend obtains it. In mock mode this
+ * constant is used to satisfy the SDK's CSRF check. Production deployments must
+ * configure `getCsrfToken` against the real backend's token endpoint.
+ */
+export const MOCK_CSRF_TOKEN = 'mitdrone-mock-csrf-token';
+
+/**
  * Mock-only signing key. NEXTAUTH_SECRET is read when handlers run on the server, but browser
  * MSW cannot read server-only environment variables and therefore uses this public demo fallback.
  * Mock JWTs are decoded, not trusted for authorization; production auth belongs on the backend.

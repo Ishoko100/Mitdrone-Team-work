@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@mitdrone/auth';
+import { ChangePasswordForm, useAuth } from '@mitdrone/auth';
 import { getErrorMessage, useUpdateVendorSettings, useVendorSettings } from '@mitdrone/sdk';
 import {
   Button,
@@ -152,6 +152,7 @@ export function SettingsView() {
       ) : (
         <Editor vendor={vendor.data} canEdit={can('vendor.settings.edit')} />
       )}
+      <ChangePasswordForm />
     </>
   );
 }

@@ -19,7 +19,13 @@ import Link from 'next/link';
 import { ProductGrid } from '@/components/product/product-card';
 import { RatingStars } from '@/components/product/rating-stars';
 
-import type { Category, LiveSession, Manufacturer, Product, ServiceListing } from '@mitdrone/types';
+import type {
+  Category,
+  LiveSession,
+  Manufacturer,
+  Product,
+  ServiceListing,
+} from '@mitdrone/types';
 import type { ReactNode } from 'react';
 
 export function SectionHeader({
@@ -52,7 +58,11 @@ export const Section = ({ children, className }: { children: ReactNode; classNam
   <section className={`container py-10 ${className ?? ''}`}>{children}</section>
 );
 
-export function Hero() {
+export function Hero({
+  backendHealth,
+}: {
+  backendHealth?: { status?: string; service?: string } | undefined;
+}) {
   return (
     <section className="marketplace-hero relative overflow-hidden border-b">
       <div className="container grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-16">
@@ -61,6 +71,14 @@ export function Hero() {
             <ShieldCheck className="size-3.5" aria-hidden="true" /> Verified sellers · Buyer
             protection
           </Badge>
+          {backendHealth ? (
+            <Badge
+              variant={backendHealth.status === 'ok' ? 'default' : 'destructive'}
+              className="marketplace-hero-badge gap-1.5 rounded-full px-3 py-1"
+            >
+              {backendHealth.service} backend · {backendHealth.status}
+            </Badge>
+          ) : null}
           <div className="space-y-4">
             <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               Find the right drone for{' '}

@@ -2,7 +2,6 @@ import {
   routes,
   type Address,
   type AddressInput,
-  type AuthResponse,
   type CartQuoteRequest,
   type Cart,
   type Category,
@@ -15,6 +14,7 @@ import {
   type LiveSessionStatus,
   type LiveSessionType,
   type LoginRequest,
+  type RegistrationTerms,
   type Manufacturer,
   type Notification,
   type Order,
@@ -27,6 +27,10 @@ import {
   type QuoteRequestInput,
   type ReferralSummary,
   type RegisterRequest,
+  type VerifyEmailRequest,
+  type EmailRequest,
+  type ResetPasswordRequest,
+  type ChangePasswordRequest,
   type Review,
   type SearchResults,
   type ServiceCategory,
@@ -45,19 +49,28 @@ type Cache = Pick<RequestOptions, 'next' | 'signal'>;
 
 export const publicEndpoints = (c: ApiClient) => ({
   auth: {
+    registrationTerms: () =>
+      c.request<RegistrationTerms>('GET', routes.auth.registrationTerms, { auth: false }),
     login: (body: LoginRequest) =>
-      c.request<AuthResponse>('POST', routes.auth.login, { body, auth: false }),
+      c.request<unknown>('POST', routes.auth.login, { body, auth: false }),
     register: (body: RegisterRequest) =>
-      c.request<AuthResponse>('POST', routes.auth.register, { body, auth: false }),
-    refresh: (refreshToken: string) =>
-      c.request<AuthResponse>('POST', routes.auth.refresh, { body: { refreshToken }, auth: false }),
-    logout: () => c.request<void>('POST', routes.auth.logout),
+      c.request<void>('POST', routes.auth.register, { body, auth: false }),
+    verifyEmail: (body: VerifyEmailRequest) =>
+      c.request<void>('POST', routes.auth.verifyEmail, { body, auth: false }),
+    resendVerification: (body: EmailRequest) =>
+      c.request<void>('POST', routes.auth.resendVerification, { body, auth: false }),
+    logout: () => c.request<void>('POST', routes.auth.logout, { csrf: true }),
+    logoutAll: () => c.request<void>('POST', routes.auth.logoutAll),
     forgotPassword: (email: string) =>
-      c.request<{ message: string }>('POST', routes.auth.forgotPassword, {
+      c.request<void>('POST', routes.auth.forgotPassword, {
         body: { email },
         auth: false,
       }),
-    me: () => c.request<User>('GET', routes.auth.me),
+    resetPassword: (body: ResetPasswordRequest) =>
+      c.request<void>('POST', routes.auth.resetPassword, { body, auth: false }),
+    changePassword: (body: ChangePasswordRequest) =>
+      c.request<void>('POST', routes.auth.changePassword, { body }),
+    session: () => c.request<unknown>('GET', routes.auth.session),
   },
 
   catalog: {

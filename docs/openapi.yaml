@@ -24,129 +24,23 @@
       }
     },
     "schemas": {
-      "User": {
+      "RegistrationTerms": {
         "type": "object",
         "properties": {
-          "id": {
+          "buyer": {
             "type": "string"
           },
-          "email": {
+          "vendor": {
             "type": "string"
           },
-          "name": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "avatarUrl": {
-            "type": "string"
-          },
-          "role": {
-            "oneOf": [
-              {
-                "type": "string",
-                "const": "customer"
-              },
-              {
-                "type": "string",
-                "const": "support"
-              },
-              {
-                "type": "string",
-                "const": "vendor_owner"
-              },
-              {
-                "type": "string",
-                "const": "vendor_staff"
-              },
-              {
-                "type": "string",
-                "const": "admin"
-              },
-              {
-                "type": "string",
-                "const": "super_admin"
-              }
-            ]
-          },
-          "status": {
-            "oneOf": [
-              {
-                "type": "string",
-                "const": "active"
-              },
-              {
-                "type": "string",
-                "const": "suspended"
-              },
-              {
-                "type": "string",
-                "const": "pending"
-              }
-            ]
-          },
-          "vendorId": {
-            "type": "string"
-          },
-          "emailVerified": {
-            "type": "boolean"
-          },
-          "lastLoginAt": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string"
-          },
-          "updatedAt": {
+          "serviceProvider": {
             "type": "string"
           }
         },
         "required": [
-          "id",
-          "email",
-          "name",
-          "role",
-          "status",
-          "emailVerified",
-          "createdAt",
-          "updatedAt"
-        ],
-        "additionalProperties": false
-      },
-      "AuthTokens": {
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string"
-          },
-          "refreshToken": {
-            "type": "string"
-          },
-          "expiresIn": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "accessToken",
-          "refreshToken",
-          "expiresIn"
-        ],
-        "additionalProperties": false
-      },
-      "AuthResponse": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/User"
-          },
-          "tokens": {
-            "$ref": "#/components/schemas/AuthTokens"
-          }
-        },
-        "required": [
-          "user",
-          "tokens"
+          "buyer",
+          "vendor",
+          "serviceProvider"
         ],
         "additionalProperties": false
       },
@@ -423,15 +317,15 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "active"
-              },
-              {
-                "type": "string",
                 "const": "draft"
               },
               {
                 "type": "string",
                 "const": "pending_review"
+              },
+              {
+                "type": "string",
+                "const": "active"
               },
               {
                 "type": "string",
@@ -604,15 +498,15 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "vendor"
-              },
-              {
-                "type": "string",
                 "const": "manufacturer"
               },
               {
                 "type": "string",
                 "const": "product"
+              },
+              {
+                "type": "string",
+                "const": "vendor"
               },
               {
                 "type": "string",
@@ -840,10 +734,6 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "suspended"
-              },
-              {
-                "type": "string",
                 "const": "draft"
               },
               {
@@ -857,6 +747,10 @@
               {
                 "type": "string",
                 "const": "rejected"
+              },
+              {
+                "type": "string",
+                "const": "suspended"
               }
             ]
           },
@@ -1157,11 +1051,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "active"
+                "const": "pending_review"
               },
               {
                 "type": "string",
-                "const": "pending_review"
+                "const": "active"
               },
               {
                 "type": "string",
@@ -1694,15 +1588,15 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "pending"
-              },
-              {
-                "type": "string",
                 "const": "processing"
               },
               {
                 "type": "string",
                 "const": "refunded"
+              },
+              {
+                "type": "string",
+                "const": "pending"
               },
               {
                 "type": "string",
@@ -1773,15 +1667,15 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "pending"
-              },
-              {
-                "type": "string",
                 "const": "processing"
               },
               {
                 "type": "string",
                 "const": "refunded"
+              },
+              {
+                "type": "string",
+                "const": "pending"
               },
               {
                 "type": "string",
@@ -1865,6 +1759,96 @@
           "total",
           "commission",
           "timeline",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": "string"
+          },
+          "role": {
+            "oneOf": [
+              {
+                "type": "string",
+                "const": "support"
+              },
+              {
+                "type": "string",
+                "const": "customer"
+              },
+              {
+                "type": "string",
+                "const": "vendor_owner"
+              },
+              {
+                "type": "string",
+                "const": "vendor_staff"
+              },
+              {
+                "type": "string",
+                "const": "admin"
+              },
+              {
+                "type": "string",
+                "const": "super_admin"
+              }
+            ]
+          },
+          "status": {
+            "oneOf": [
+              {
+                "type": "string",
+                "const": "active"
+              },
+              {
+                "type": "string",
+                "const": "suspended"
+              },
+              {
+                "type": "string",
+                "const": "pending"
+              }
+            ]
+          },
+          "vendorId": {
+            "type": "string"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "lastLoginAt": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "status",
+          "emailVerified",
           "createdAt",
           "updatedAt"
         ],
@@ -2458,15 +2442,15 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "pending"
-              },
-              {
-                "type": "string",
                 "const": "processing"
               },
               {
                 "type": "string",
                 "const": "failed"
+              },
+              {
+                "type": "string",
+                "const": "pending"
               },
               {
                 "type": "string",
@@ -3232,11 +3216,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "customer"
+                "const": "support"
               },
               {
                 "type": "string",
-                "const": "support"
+                "const": "customer"
               },
               {
                 "type": "string",
@@ -3324,11 +3308,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "const": "vendor"
+                "const": "product"
               },
               {
                 "type": "string",
-                "const": "product"
+                "const": "vendor"
               },
               {
                 "type": "string",
@@ -3437,6 +3421,62 @@
     }
   },
   "paths": {
+    "/api/v1/auth/registration-terms": {
+      "get": {
+        "operationId": "auth_registrationTerms",
+        "tags": [
+          "auth"
+        ],
+        "summary": "GET /api/v1/auth/registration-terms",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationTerms"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "auth_login",
@@ -3450,7 +3490,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "type": "object",
+                  "additionalProperties": true
                 }
               }
             }
@@ -3521,14 +3562,7 @@
         "summary": "POST /api/v1/auth/register",
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
-                }
-              }
-            }
+            "description": "Successful response"
           },
           "400": {
             "description": "Invalid request",
@@ -3575,37 +3609,33 @@
                   "password": {
                     "type": "string"
                   },
-                  "name": {
+                  "acceptedTerms": {
+                    "type": "boolean"
+                  },
+                  "termsVersion": {
+                    "type": "string"
+                  },
+                  "fullName": {
+                    "type": "string"
+                  },
+                  "phone": {
                     "type": "string"
                   },
                   "confirmPassword": {
                     "type": "string"
                   },
-                  "accountType": {
-                    "oneOf": [
-                      {
-                        "type": "string",
-                        "const": "customer"
-                      },
-                      {
-                        "type": "string",
-                        "const": "vendor"
-                      }
-                    ]
-                  },
-                  "phone": {
-                    "type": "string"
-                  },
-                  "referralCode": {
+                  "displayName": {
                     "type": "string"
                   }
                 },
                 "required": [
                   "email",
                   "password",
-                  "name",
-                  "confirmPassword",
-                  "accountType"
+                  "acceptedTerms",
+                  "termsVersion",
+                  "fullName",
+                  "phone",
+                  "confirmPassword"
                 ],
                 "additionalProperties": false
               }
@@ -3614,23 +3644,16 @@
         }
       }
     },
-    "/api/v1/auth/refresh": {
+    "/api/v1/auth/verify-email": {
       "post": {
-        "operationId": "auth_refresh",
+        "operationId": "auth_verifyEmail",
         "tags": [
           "auth"
         ],
-        "summary": "POST /api/v1/auth/refresh",
+        "summary": "POST /api/v1/auth/verify-email",
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
-                }
-              }
-            }
+            "description": "Successful response"
           },
           "400": {
             "description": "Invalid request",
@@ -3663,7 +3686,11 @@
             }
           }
         },
-        "security": [],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -3671,12 +3698,84 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "refreshToken": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "token": {
                     "type": "string"
                   }
                 },
                 "required": [
-                  "refreshToken"
+                  "password",
+                  "token"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/resend-verification": {
+      "post": {
+        "operationId": "auth_resendVerification",
+        "tags": [
+          "auth"
+        ],
+        "summary": "POST /api/v1/auth/resend-verification",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
                 ],
                 "additionalProperties": false
               }
@@ -3734,6 +3833,55 @@
         ]
       }
     },
+    "/api/v1/auth/logout-all": {
+      "post": {
+        "operationId": "auth_logoutAll",
+        "tags": [
+          "auth"
+        ],
+        "summary": "POST /api/v1/auth/logout-all",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/auth/forgot-password": {
       "post": {
         "operationId": "auth_forgotPassword",
@@ -3743,23 +3891,7 @@
         "summary": "POST /api/v1/auth/forgot-password",
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
+            "description": "Successful response"
           },
           "400": {
             "description": "Invalid request",
@@ -3814,20 +3946,165 @@
         }
       }
     },
-    "/api/v1/auth/me": {
-      "get": {
-        "operationId": "auth_me",
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "operationId": "auth_resetPassword",
         "tags": [
           "auth"
         ],
-        "summary": "GET /api/v1/auth/me",
+        "summary": "POST /api/v1/auth/reset-password",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "password",
+                  "token"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/change-password": {
+      "post": {
+        "operationId": "auth_changePassword",
+        "tags": [
+          "auth"
+        ],
+        "summary": "POST /api/v1/auth/change-password",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "currentPassword": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "currentPassword",
+                  "newPassword"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/session": {
+      "get": {
+        "operationId": "auth_session",
+        "tags": [
+          "auth"
+        ],
+        "summary": "GET /api/v1/auth/session",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "additionalProperties": true
                 }
               }
             }
@@ -4073,15 +4350,15 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "const": "active"
-                },
-                {
-                  "type": "string",
                   "const": "draft"
                 },
                 {
                   "type": "string",
                   "const": "pending_review"
+                },
+                {
+                  "type": "string",
+                  "const": "active"
                 },
                 {
                   "type": "string",
@@ -5501,6 +5778,9 @@
                   "shippingAddress": {
                     "type": "object",
                     "properties": {
+                      "fullName": {
+                        "type": "string"
+                      },
                       "phone": {
                         "type": "string"
                       },
@@ -5508,9 +5788,6 @@
                         "type": "string"
                       },
                       "city": {
-                        "type": "string"
-                      },
-                      "fullName": {
                         "type": "string"
                       },
                       "line1": {
@@ -5527,10 +5804,10 @@
                       }
                     },
                     "required": [
+                      "fullName",
                       "phone",
                       "state",
                       "city",
-                      "fullName",
                       "line1",
                       "country"
                     ],
@@ -5655,6 +5932,9 @@
                   "shippingAddress": {
                     "type": "object",
                     "properties": {
+                      "fullName": {
+                        "type": "string"
+                      },
                       "phone": {
                         "type": "string"
                       },
@@ -5662,9 +5942,6 @@
                         "type": "string"
                       },
                       "city": {
-                        "type": "string"
-                      },
-                      "fullName": {
                         "type": "string"
                       },
                       "line1": {
@@ -5681,10 +5958,10 @@
                       }
                     },
                     "required": [
+                      "fullName",
                       "phone",
                       "state",
                       "city",
-                      "fullName",
                       "line1",
                       "country"
                     ],
@@ -6022,6 +6299,9 @@
                   {
                     "type": "object",
                     "properties": {
+                      "fullName": {
+                        "type": "string"
+                      },
                       "phone": {
                         "type": "string"
                       },
@@ -6029,9 +6309,6 @@
                         "type": "string"
                       },
                       "city": {
-                        "type": "string"
-                      },
-                      "fullName": {
                         "type": "string"
                       },
                       "line1": {
@@ -6048,10 +6325,10 @@
                       }
                     },
                     "required": [
+                      "fullName",
                       "phone",
                       "state",
                       "city",
-                      "fullName",
                       "line1",
                       "country"
                     ],
@@ -7205,9 +7482,6 @@
                   {
                     "type": "object",
                     "properties": {
-                      "name": {
-                        "type": "string"
-                      },
                       "phone": {
                         "type": "string"
                       },
@@ -7218,6 +7492,9 @@
                         "type": "string"
                       },
                       "city": {
+                        "type": "string"
+                      },
+                      "name": {
                         "type": "string"
                       },
                       "website": {
@@ -7731,15 +8008,15 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "const": "pending"
-                },
-                {
-                  "type": "string",
                   "const": "processing"
                 },
                 {
                   "type": "string",
                   "const": "refunded"
+                },
+                {
+                  "type": "string",
+                  "const": "pending"
                 },
                 {
                   "type": "string",
@@ -8041,15 +8318,15 @@
                     "oneOf": [
                       {
                         "type": "string",
-                        "const": "pending"
-                      },
-                      {
-                        "type": "string",
                         "const": "processing"
                       },
                       {
                         "type": "string",
                         "const": "refunded"
+                      },
+                      {
+                        "type": "string",
+                        "const": "pending"
                       },
                       {
                         "type": "string",
@@ -9385,10 +9662,6 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "const": "suspended"
-                },
-                {
-                  "type": "string",
                   "const": "draft"
                 },
                 {
@@ -9402,6 +9675,10 @@
                 {
                   "type": "string",
                   "const": "rejected"
+                },
+                {
+                  "type": "string",
+                  "const": "suspended"
                 }
               ]
             }
@@ -9934,15 +10211,15 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "const": "active"
-                },
-                {
-                  "type": "string",
                   "const": "draft"
                 },
                 {
                   "type": "string",
                   "const": "pending_review"
+                },
+                {
+                  "type": "string",
+                  "const": "active"
                 },
                 {
                   "type": "string",
@@ -10355,15 +10632,15 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "const": "pending"
-                },
-                {
-                  "type": "string",
                   "const": "processing"
                 },
                 {
                   "type": "string",
                   "const": "refunded"
+                },
+                {
+                  "type": "string",
+                  "const": "pending"
                 },
                 {
                   "type": "string",
@@ -11105,15 +11382,15 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "const": "pending"
-                },
-                {
-                  "type": "string",
                   "const": "processing"
                 },
                 {
                   "type": "string",
                   "const": "failed"
+                },
+                {
+                  "type": "string",
+                  "const": "pending"
                 },
                 {
                   "type": "string",
@@ -11459,11 +11736,11 @@
                     "oneOf": [
                       {
                         "type": "string",
-                        "const": "customer"
+                        "const": "support"
                       },
                       {
                         "type": "string",
-                        "const": "support"
+                        "const": "customer"
                       },
                       {
                         "type": "string",
@@ -11842,11 +12119,11 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "const": "vendor"
+                  "const": "product"
                 },
                 {
                   "type": "string",
-                  "const": "product"
+                  "const": "vendor"
                 },
                 {
                   "type": "string",

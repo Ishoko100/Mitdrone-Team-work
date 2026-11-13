@@ -28,6 +28,20 @@ import Link from 'next/link';
 import { TimeSeriesChart } from '@/components/common/lazy-charts';
 import { compactNaira, toNairaSeries } from '@/lib/money';
 
+function BackendBadge({
+  backendHealth,
+}: {
+  backendHealth?: { status?: string; service?: string } | undefined;
+}) {
+  if (!backendHealth) return null;
+  return (
+    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+      {backendHealth.service === 'mitdrone-backend' ? '●' : '○'}
+      {backendHealth.status === 'ok' ? 'Backend live' : 'Backend degraded'}
+    </span>
+  );
+}
+
 function Attention({
   title,
   count,
@@ -59,7 +73,11 @@ function Attention({
   );
 }
 
-export function Overview() {
+export function Overview({
+  backendHealth,
+}: {
+  backendHealth?: { status?: string; service?: string } | undefined;
+}) {
   const dash = useAdminDashboard();
   const pendingVendors = useAdminVendors({ status: 'pending_review', pageSize: 4 });
   const pendingProducts = useAdminProducts({ status: 'pending_review', pageSize: 4 });
@@ -76,6 +94,7 @@ export function Overview() {
       <PageHeader
         title="Platform overview"
         description="How the marketplace is doing and what needs your attention."
+        actions={<BackendBadge backendHealth={backendHealth} />}
       />
       <section aria-label="Key metrics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard

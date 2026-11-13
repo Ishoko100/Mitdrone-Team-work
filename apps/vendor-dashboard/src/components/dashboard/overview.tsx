@@ -31,7 +31,11 @@ import { compactNaira, toNairaSeries } from '@/lib/money';
 
 import { TimeSeriesChart } from './lazy-charts';
 
-export function Overview() {
+export function Overview({
+  backendHealth,
+}: {
+  backendHealth?: { status?: string; service?: string } | undefined;
+}) {
   const { user } = useAuth();
   const v = user?.vendorId;
   const vendor = useVendorSettings(v).data;
@@ -50,15 +54,27 @@ export function Overview() {
         title={`Welcome back${user ? `, ${user.name.split(' ')[0]}` : ''}`}
         description="Here is how your store performed in the last 30 days."
         actions={
-          approved ? (
-            <Button asChild>
-              <Link href="/products/new">Add product</Link>
-            </Button>
-          ) : (
-            <Button asChild>
-              <Link href="/onboarding">Finish setup</Link>
-            </Button>
-          )
+          <>
+            {backendHealth ? (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                {backendHealth.service === 'mitdrone-backend' ? '●' : '○'}
+                {backendHealth.status === 'ok' ? 'Backend live' : 'Backend degraded'}
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                ○ Backend unavailable
+              </span>
+            )}
+            {approved ? (
+              <Button asChild>
+                <Link href="/products/new">Add product</Link>
+              </Button>
+            ) : (
+              <Button asChild>
+                <Link href="/onboarding">Finish setup</Link>
+              </Button>
+            )}
+          </>
         }
       />
 

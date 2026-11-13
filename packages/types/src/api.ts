@@ -8,7 +8,7 @@ import type { Payment } from './payment';
 import type { Payout } from './payout';
 import type { Category, Product } from './product';
 import type { ServiceListing } from './service';
-import type { AuthTokens, User } from './user';
+import type { User } from './user';
 import type { Vendor, VendorKYC, VendorStats } from './vendor';
 
 /* ---------- Errors ---------- */
@@ -21,23 +21,23 @@ export interface ApiErrorBody {
 
 /* ---------- Auth ---------- */
 export const loginSchema = z.object({
-  email: z.string().email('Enter a valid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().email('Enter a valid email').max(254),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
 });
 export type LoginRequest = z.infer<typeof loginSchema>;
 
 export const registerSchema = z
   .object({
-    name: z.string().min(2, 'Enter your full name'),
-    email: z.string().email('Enter a valid email'),
-    phone: z.string().optional(),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string(),
-    referralCode: z.string().optional(),
-    accountType: z.enum(['customer', 'vendor']).default('customer'),
-    vendorType: z
-      .enum(['individual_seller', 'dealer', 'manufacturer', 'service_provider', 'renter'])
-      .optional(),
+    email: z.string().email('Enter a valid email').max(254),
+    acceptedTerms: z.boolean().refine((accepted) => accepted, {
+      message: 'Accept the terms to continue',
+    }),
+    termsVersion: z.string().min(1),
+    fullName: z.string().min(2, 'Enter your full name'),
+    phone: z.string().min(1, 'Enter your phone number'),
+    password: z.string().min(8, 'Password must be at least 8 characters').max(128),
+    confirmPassword: z.string().max(128),
+    displayName: z.string().optional(),
   })
   .refine((v) => v.password === v.confirmPassword, {
     path: ['confirmPassword'],
@@ -45,13 +45,34 @@ export const registerSchema = z
   });
 export type RegisterRequest = z.infer<typeof registerSchema>;
 
-export interface AuthResponse {
-  user: User;
-  tokens: AuthTokens;
+export interface RegistrationTerms {
+  buyer: string;
+  vendor: string;
+  serviceProvider: string;
 }
-export interface RefreshRequest {
-  refreshToken: string;
-}
+
+export const verifyEmailSchema = z.object({
+  token: z.string().length(43),
+  password: z.string().min(1, 'Enter the password used at registration').max(128),
+});
+export type VerifyEmailRequest = z.infer<typeof verifyEmailSchema>;
+
+export const emailRequestSchema = z.object({
+  email: z.string().email('Enter a valid email').max(254),
+});
+export type EmailRequest = z.infer<typeof emailRequestSchema>;
+
+export const resetPasswordSchema = z.object({
+  token: z.string().length(43),
+  password: z.string().min(1).max(128),
+});
+export type ResetPasswordRequest = z.infer<typeof resetPasswordSchema>;
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(15, 'Password must be at least 15 characters').max(128),
+});
+export type ChangePasswordRequest = z.infer<typeof changePasswordSchema>;
 
 /* ---------- Forms shared across apps ---------- */
 export const addressSchema = z.object({

@@ -29,9 +29,13 @@ export function AuthProvider({ children, controller, ...options }: AuthProviderP
     () =>
       buildAuthValue(state, {
         login: ctrl.login,
-        register: ctrl.register,
+        register: async (input) => {
+          await ctrl.register(input);
+        },
         logout: ctrl.logout,
-        reloadUser: ctrl.reloadUser,
+        reloadUser: async () => {
+          await ctrl.reloadUser();
+        },
       }),
     [state, ctrl],
   );

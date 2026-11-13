@@ -58,20 +58,20 @@ export function AccountMenu() {
         <DropdownMenuContent
           align="end"
           sideOffset={4}
-          className="w-[min(19rem,calc(100vw-1rem))] max-h-[calc(100vh-5rem)] overflow-y-auto rounded-3xl border-0 bg-white p-4 text-[#222] shadow-xl dark:bg-white dark:text-[#222]"
+          className="max-h-[calc(100vh-5rem)] w-[min(19rem,calc(100vw-1rem))] overflow-y-auto rounded-3xl border-0 bg-white p-4 text-[#222] shadow-xl dark:bg-white dark:text-[#222]"
           onMouseEnter={() => setGuestMenuOpen(true)}
           onMouseLeave={() => setGuestMenuOpen(false)}
         >
           <div className="space-y-0.5 pb-3">
             <Button
               asChild
-              className="h-12 w-full rounded-full bg-primary text-base font-semibold text-white shadow-none hover:bg-[hsl(173,76%,23%)]"
+              className="bg-primary h-12 w-full rounded-full text-base font-semibold text-white shadow-none hover:bg-[hsl(173,76%,23%)]"
             >
               <Link href="/login">Sign in</Link>
             </Button>
             <Link
               href="/register"
-              className="flex items-center justify-center h-9 rounded-full text-center text-sm text-[#777] hover:text-[#171717] hover:bg-primary/20"
+              className="hover:bg-primary/20 flex h-9 items-center justify-center rounded-full text-center text-sm text-[#777] hover:text-[#171717]"
             >
               Register
             </Link>
@@ -174,9 +174,13 @@ export function AccountMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={async () => {
-            await logout();
-            toast.success('You have been signed out');
-            router.push('/');
+            try {
+              await logout();
+              toast.success('You have been signed out');
+              router.push('/');
+            } catch {
+              toast.error('Could not sign out. Please try again.');
+            }
           }}
         >
           <LogOut /> Sign out

@@ -11,9 +11,9 @@ export interface AuthContextValue extends AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: LoginRequest) => Promise<User>;
-  register: (input: RegisterRequest) => Promise<User>;
+  register: (input: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
-  /** Re-fetches /auth/me, e.g. after a profile change. */
+  /** Re-fetches the backend session, e.g. after a profile change. */
   reloadUser: () => Promise<void>;
   hasRole: (roles: Role | readonly Role[]) => boolean;
   can: (permission: Permission) => boolean;

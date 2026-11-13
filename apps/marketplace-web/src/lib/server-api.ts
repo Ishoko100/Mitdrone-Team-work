@@ -1,8 +1,8 @@
 import 'server-only';
 
+import { MOCK_CSRF_TOKEN, setMockConfig } from '@mitdrone/mocks';
+import { mockFetch } from '@mitdrone/mocks/fetch';
 import { api, configureApiClient } from '@mitdrone/sdk';
-
-import { env } from '@/lib/env';
 
 export const REVALIDATE_SECONDS = 60;
 
@@ -12,13 +12,15 @@ export const REVALIDATE_SECONDS = 60;
  * work identically in `next dev`, `next build` and `next start`.
  */
 export async function serverApi(): Promise<typeof api> {
-  if (env.NEXT_PUBLIC_ENABLE_MOCKS === 'true') {
-    const [{ mockFetch }, { setMockConfig }] = await Promise.all([
-      import('@mitdrone/mocks/fetch'),
-      import('@mitdrone/mocks'),
-    ]);
+  // server-only: configure in-process mock fetch unless explicitly disabled.
+  // Defaults to mocks so SSR works with zero config; set NEXT_PUBLIC_ENABLE_MOCKS=false
+  // to call the real API at NEXT_PUBLIC_API_URL.
+  if (process.env.NEXT_PUBLIC_ENABLE_MOCKS !== 'false') {
     setMockConfig({ latency: false });
-    configureApiClient({ fetch: mockFetch });
+    configureApiClient({
+      fetch: mockFetch,
+      getCsrfToken: () => MOCK_CSRF_TOKEN,
+    });
   }
   return api;
 }

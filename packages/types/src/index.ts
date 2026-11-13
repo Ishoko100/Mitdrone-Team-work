@@ -18,3 +18,5 @@ export * from './api';
 export * from './admin';
 export * from './content';
 export * from './routes';
+export * from './backend';
+export * from './backend-routes';

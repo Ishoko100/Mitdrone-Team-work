@@ -1,8 +1,6 @@
 import { api, ApiClientError, configureApiClient, isApiError } from '@mitdrone/sdk';
 
-import { createTokenStore, type TokenStore } from './token-store';
-
-import type { AuthResponse, LoginRequest, RegisterRequest, Role, User } from '@mitdrone/types';
+import type { LoginRequest, RegisterRequest, Role, User } from '@mitdrone/types';
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 export interface AuthState {
@@ -11,49 +9,69 @@ export interface AuthState {
 }
 
 export interface AuthControllerOptions {
-  /** Namespaces storage so the three apps never share a session. */
+  /** @deprecated Cookie sessions are shared according to backend cookie scope. */
   storageKey?: string;
-  /** Roles allowed to sign in to this app. A customer cannot sign in to the vendor dashboard. */
+  /** Enables the mock server's in-memory bearer token compatibility. Never enable for production. */
+  mockMode?: boolean;
+  /** Roles allowed to sign in to this app. */
   allowedRoles?: readonly Role[];
-  /** Called when a session ends unexpectedly (refresh failed). */
+  /** Called when the backend session is no longer valid. */
   onSessionExpired?: () => void;
 }
 
 const SERVER_STATE: AuthState = { status: 'loading', user: null };
-const REFRESH_MARGIN_SECONDS = 60;
 
-/**
- * Framework-free session manager: token storage, single-flight refresh, proactive refresh before
- * expiry, cross-tab logout, and role restrictions. React subscribes through useSyncExternalStore.
- */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isUser(value: unknown): value is User {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === 'string' &&
+    typeof value.email === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.role === 'string' &&
+    typeof value.status === 'string' &&
+    typeof value.emailVerified === 'boolean'
+  );
+}
+
+function sessionUser(payload: unknown): User {
+  const candidate = isRecord(payload) && 'user' in payload ? payload.user : payload;
+  if (!isUser(candidate)) {
+    throw new ApiClientError({
+      status: 502,
+      code: 'invalid_session_response',
+      message: 'The backend session response does not contain a supported user record.',
+    });
+  }
+  return candidate;
+}
+
+/** Cookie-backed session manager. The HTTP-only session cookie is never read by JavaScript. */
 export class AuthController {
   private state: AuthState = { status: 'loading', user: null };
   private listeners = new Set<() => void>();
-  private readonly store: TokenStore;
   private readonly allowedRoles: readonly Role[] | undefined;
   private readonly onSessionExpired: (() => void) | undefined;
+  private readonly mockMode: boolean;
+  private mockAccessToken: string | null = null;
   private restoring: Promise<void> | null = null;
-  private refreshing: Promise<boolean> | null = null;
-  private timer: ReturnType<typeof setTimeout> | undefined;
-  private expiresAt = 0;
-  private detachStorage: (() => void) | undefined;
 
   constructor(options: AuthControllerOptions = {}) {
-    this.store = createTokenStore(options.storageKey ?? 'mitdrone.auth');
     this.allowedRoles = options.allowedRoles;
     this.onSessionExpired = options.onSessionExpired;
+    this.mockMode = options.mockMode ?? false;
   }
 
-  /** Bind the shared SDK client to this live controller after React selects its instance. */
   bindApiClient(): void {
     configureApiClient({
-      getAccessToken: () => this.store.getAccess(),
-      refreshAccessToken: async () => ((await this.refresh()) ? this.store.getAccess() : null),
       onAuthFailure: () => this.expire(),
+      ...(this.mockMode ? { getAccessToken: () => this.mockAccessToken } : {}),
     });
   }
 
-  /* ---------------------------------------------------- external store API */
   subscribe = (listener: () => void): (() => void) => {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
@@ -61,66 +79,57 @@ export class AuthController {
   getSnapshot = (): AuthState => this.state;
   getServerSnapshot = (): AuthState => SERVER_STATE;
 
-  /* ----------------------------------------------------------- lifecycle */
-  /** Start listening for cross-tab changes and resume the refresh timer. Pair with detach(). */
-  attach = (): void => {
-    this.detachStorage?.();
-    this.detachStorage = this.store.subscribe(() => {
-      if (!this.store.getRefresh()) {
-        if (this.state.status === 'authenticated') this.endSession();
-      } else if (this.state.status !== 'authenticated') {
-        void this.refresh();
-      }
-    });
-    if (this.state.status === 'authenticated') this.scheduleRefresh();
-  };
+  attach = (): void => undefined;
+  detach = (): void => undefined;
 
-  detach = (): void => {
-    this.detachStorage?.();
-    this.detachStorage = undefined;
-    clearTimeout(this.timer);
-  };
-
-  /** Resume a session from the stored refresh token. Safe to call more than once. */
   restore = (): Promise<void> => {
     this.restoring ??= (async () => {
-      if (!this.store.getRefresh()) return this.setUnauthenticated();
-      const ok = await this.refresh();
-      if (!ok && this.state.status === 'loading') this.setUnauthenticated();
+      try {
+        await this.reloadUser();
+      } catch (error) {
+        if (isApiError(error) && error.status === 401) {
+          this.setUnauthenticated();
+          return;
+        }
+        this.setUnauthenticated();
+        if (isApiError(error) && error.status !== 0) throw error;
+      }
     })();
     return this.restoring;
   };
 
-  /* -------------------------------------------------------------- actions */
-  login = async (credentials: LoginRequest): Promise<User> =>
-    this.startSession(await api.auth.login(credentials));
+  login = async (credentials: LoginRequest): Promise<User> => {
+    const response = await api.auth.login(credentials);
+    if (this.mockMode && isRecord(response) && isRecord(response.tokens)) {
+      this.mockAccessToken =
+        typeof response.tokens.accessToken === 'string' ? response.tokens.accessToken : null;
+      configureApiClient({ getAccessToken: () => this.mockAccessToken });
+    }
+    return this.reloadUser();
+  };
 
-  register = async (input: RegisterRequest): Promise<User> =>
-    this.startSession(await api.auth.register(input));
+  register = async (input: RegisterRequest): Promise<void> => {
+    await api.auth.register(input);
+  };
 
   logout = async (): Promise<void> => {
+    await api.auth.logout();
+    this.mockAccessToken = null;
+    this.setUnauthenticated();
+  };
+
+  reloadUser = async (): Promise<User> => {
     try {
-      if (this.store.getAccess()) await api.auth.logout();
-    } catch {
-      // Logging out must always succeed locally.
+      const user = sessionUser(await api.auth.session());
+      this.assertAllowed(user);
+      this.setState({ status: 'authenticated', user });
+      return user;
+    } catch (error) {
+      if (isApiError(error) && error.status === 401) this.expire();
+      throw error;
     }
-    this.endSession();
   };
 
-  reloadUser = async (): Promise<void> => {
-    const user = await api.auth.me();
-    this.setState({ status: 'authenticated', user });
-  };
-
-  /** Single-flight refresh. Returns false when there is no valid session. */
-  refresh = (): Promise<boolean> => {
-    this.refreshing ??= this.doRefresh().finally(() => {
-      this.refreshing = null;
-    });
-    return this.refreshing;
-  };
-
-  /* ------------------------------------------------------------- internals */
   private assertAllowed(user: User): void {
     if (this.allowedRoles && !this.allowedRoles.includes(user.role)) {
       throw new ApiClientError({
@@ -131,46 +140,10 @@ export class AuthController {
     }
   }
 
-  private startSession(response: AuthResponse): User {
-    this.assertAllowed(response.user);
-    this.store.set(response.tokens);
-    this.expiresAt = Date.now() + response.tokens.expiresIn * 1000;
-    this.setState({ status: 'authenticated', user: response.user });
-    this.scheduleRefresh();
-    return response.user;
-  }
-
-  private async doRefresh(): Promise<boolean> {
-    const refreshToken = this.store.getRefresh();
-    if (!refreshToken) return false;
-    try {
-      this.startSession(await api.auth.refresh(refreshToken));
-      return true;
-    } catch (error) {
-      // Offline: keep the stored session and try again later.
-      if (isApiError(error) && error.status === 0) return false;
-      this.expire();
-      return false;
-    }
-  }
-
-  private scheduleRefresh(): void {
-    clearTimeout(this.timer);
-    const wait = Math.max(this.expiresAt - Date.now() - REFRESH_MARGIN_SECONDS * 1000, 10_000);
-    this.timer = setTimeout(() => void this.refresh(), wait);
-  }
-
-  /** Session ended by the server (refresh rejected or 401 unrecoverable). */
   private expire(): void {
     const wasAuthenticated = this.state.status === 'authenticated';
-    this.endSession();
-    if (wasAuthenticated) this.onSessionExpired?.();
-  }
-
-  private endSession(): void {
-    clearTimeout(this.timer);
-    this.store.clear();
     this.setUnauthenticated();
+    if (wasAuthenticated) this.onSessionExpired?.();
   }
 
   private setUnauthenticated(): void {

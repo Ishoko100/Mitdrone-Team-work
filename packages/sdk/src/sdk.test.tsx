@@ -1,7 +1,6 @@
 import { MOCK_PASSWORD } from '@mitdrone/data';
 import { resetDb, setMockConfig } from '@mitdrone/mocks';
 import { server } from '@mitdrone/mocks/node';
-import { encodeMockJwt } from '@mitdrone/utils';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -43,7 +42,7 @@ beforeEach(() => {
   configureApiClient({
     baseUrl: BASE,
     getAccessToken: undefined,
-    refreshAccessToken: undefined,
+    getCsrfToken: () => 'test-csrf-token',
     onAuthFailure: undefined,
     onError: undefined,
     fetch: testFetch,
@@ -64,7 +63,10 @@ const wrapper = () => {
 };
 
 async function loginAs(email: string) {
-  const { tokens, user } = await api.auth.login({ email, password: MOCK_PASSWORD });
+  const { tokens, user } = (await api.auth.login({
+    email,
+    password: MOCK_PASSWORD,
+  })) as { tokens: { accessToken: string }; user: { id: string } };
   configureApiClient({ getAccessToken: () => tokens.accessToken });
   return { tokens, user };
 }
@@ -81,11 +83,13 @@ describe('client', () => {
     configureApiClient({ onError });
     const error = await api.auth
       .register({
-        name: 'Ibrahim',
         email: 'ibrahim@mitdrone.test',
+        fullName: 'Ibrahim Musa',
+        phone: '08031234567',
+        acceptedTerms: true,
+        termsVersion: 'v1',
         password: 'Password123!',
         confirmPassword: 'Password123!',
-        accountType: 'customer',
       })
       .catch((e: unknown) => e);
     expect(isApiError(error)).toBe(true);
@@ -112,33 +116,46 @@ describe('client', () => {
     expect(orders.data.length).toBeGreaterThan(0);
   });
 
-  it('refreshes an expired token once (single-flight) and retries', async () => {
-    const { tokens } = await api.auth.login({
-      email: 'ibrahim@mitdrone.test',
-      password: MOCK_PASSWORD,
-    });
-    const expired = encodeMockJwt({ sub: 'usr_cus_001', type: 'access', exp: 1 }, 'x');
-    let current = expired;
-    const refresh = vi.fn(async () => {
-      current = tokens.accessToken;
-      return current;
-    });
-    configureApiClient({ getAccessToken: () => current, refreshAccessToken: refresh });
-    const [a, b] = await Promise.all([api.me.orders(), api.me.addresses()]);
-    expect(a.data.length).toBeGreaterThan(0);
-    expect(b.length).toBeGreaterThan(0);
-    expect(refresh).toHaveBeenCalledTimes(1);
-  });
-
-  it('calls onAuthFailure when refresh fails', async () => {
+  it('calls onAuthFailure when the cookie session has expired', async () => {
     const onAuthFailure = vi.fn();
     configureApiClient({
-      getAccessToken: () => encodeMockJwt({ sub: 'x', type: 'access', exp: 1 }, 'x'),
-      refreshAccessToken: async () => null,
+      getAccessToken: undefined,
       onAuthFailure,
     });
     await expect(api.me.orders()).rejects.toMatchObject({ status: 401 });
     expect(onAuthFailure).toHaveBeenCalledOnce();
+  });
+
+  it('includes cookies and a CSRF header on authenticated mutations', async () => {
+    const fetch = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      expect(init?.credentials).toBe('include');
+      expect(new Headers(init?.headers).get('x-csrf-token')).toBe('test-csrf-token');
+      return Response.json({ id: 'address-1' });
+    });
+    configureApiClient({ fetch });
+    await api.me.addAddress({
+      fullName: 'Ibrahim Musa',
+      phone: '08031234567',
+      line1: '12 Zaria Road',
+      city: 'Zaria',
+      state: 'Kaduna',
+      country: 'NG',
+    });
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('fails closed when no CSRF token is configured', async () => {
+    configureApiClient({ getCsrfToken: undefined });
+    await expect(
+      api.me.addAddress({
+        fullName: 'Ibrahim Musa',
+        phone: '08031234567',
+        line1: '12 Zaria Road',
+        city: 'Zaria',
+        state: 'Kaduna',
+        country: 'NG',
+      }),
+    ).rejects.toMatchObject({ code: 'csrf_token_unavailable' });
   });
 });
 

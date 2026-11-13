@@ -60,23 +60,7 @@ describe('auth', () => {
         })
       ).status,
     ).toBe(401);
-    expect((await call('GET', routes.auth.me)).status).toBe(401);
-  });
-  it('refreshes tokens', async () => {
-    const { json } = await call('POST', routes.auth.login, {
-      body: { email: 'ibrahim@mitdrone.test', password: MOCK_PASSWORD },
-    });
-    const refreshed = await call('POST', routes.auth.refresh, {
-      body: { refreshToken: json['tokens'].refreshToken },
-    });
-    expect(refreshed.status).toBe(200);
-    expect(
-      (
-        await call('POST', routes.auth.refresh, {
-          body: { refreshToken: json['tokens'].accessToken },
-        })
-      ).status,
-    ).toBe(401);
+    expect((await call('GET', routes.auth.session)).status).toBe(401);
   });
 });
 

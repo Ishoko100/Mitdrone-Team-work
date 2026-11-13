@@ -11,7 +11,14 @@ import {
   TrustBar,
   TrustedBrandsStrip,
 } from '@/components/home/sections';
-import { getCategories, getManufacturers, getProducts, getServices, getVendors } from '@/lib/data';
+import {
+  getBackendHealthLive,
+  getCategories,
+  getManufacturers,
+  getProducts,
+  getServices,
+  getVendors,
+} from '@/lib/data';
 import { env } from '@/lib/env';
 import { jsonLdString } from '@/lib/seo';
 
@@ -22,6 +29,7 @@ export const revalidate = 60;
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 export default async function HomePage() {
+  const backendHealth = await getBackendHealthLive();
   const [deals, featured, equipment, accessories, categories, services, manufacturers] =
     await Promise.all([
       getProducts({ deal: true, pageSize: 5 }),
@@ -52,7 +60,7 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(website) }}
       />
-      <Hero />
+      <Hero backendHealth={backendHealth} />
       <EntryCards />
       <DealsSection products={deals.data} />
       <FeaturedSection products={featured.data} />

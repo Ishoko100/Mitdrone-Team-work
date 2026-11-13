@@ -1,10 +1,13 @@
 'use client';
 
 import { ROLE_LABELS, RequireAuth, useAuth } from '@mitdrone/auth';
-import { useVendorSettings } from '@mitdrone/sdk';
+import { api, useVendorSettings } from '@mitdrone/sdk';
+import { useState, useEffect } from 'react';
+
 import {
   Avatar,
   AvatarFallback,
+  Badge,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -112,6 +115,18 @@ function Chrome({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { collapsed, toggleCollapsed, mobileOpen, setMobileOpen } = useSidebarStore();
   const vendor = useVendorSettings(user?.vendorId).data;
+  const [backendHealth, setBackendHealth] = useState<{ status?: string; service?: string } | undefined>(undefined);
+
+  useEffect(() => {
+    let active = true;
+    api.backend.health.live().then((h) => {
+      if (active) setBackendHealth(h);
+    }).catch(() => {
+      if (active) setBackendHealth(undefined);
+    });
+    return () => { active = false; };
+  }, []);
+
   const banner = vendor && vendor.status !== 'approved' ? BANNERS[vendor.status] : undefined;
 
   return (
@@ -172,6 +187,13 @@ function Chrome({ children }: { children: ReactNode }) {
               {vendor?.name ?? <Skeleton className="h-5 w-32" />}
             </span>
             {vendor ? <StatusBadge status={vendor.status} /> : null}
+            {backendHealth ? (
+              <Badge
+                variant={backendHealth.status === 'ok' ? 'default' : 'destructive'}
+              >
+                {backendHealth.service} backend · {backendHealth.status}
+              </Badge>
+            ) : null}
           </div>
           <div className="ml-auto flex items-center gap-1">
             {vendor?.status === 'approved' ? (
@@ -215,9 +237,13 @@ function Chrome({ children }: { children: ReactNode }) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onSelect={async () => {
-                      await logout();
-                      toast.success('Signed out');
-                      router.push('/login');
+                      try {
+                        await logout();
+                        toast.success('Signed out');
+                        router.push('/login');
+                      } catch {
+                        toast.error('Could not sign out. Please try again.');
+                      }
                     }}
                   >
                     <LogOut /> Sign out

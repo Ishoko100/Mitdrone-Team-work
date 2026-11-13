@@ -9,6 +9,7 @@ import { env } from '@/lib/env';
  */
 if (typeof window !== 'undefined' && env.NEXT_PUBLIC_ENABLE_MOCKS === 'true') {
   configureApiClient({
+    getCsrfToken: () => 'mock-only-csrf-token',
     fetch: async (input, init) => {
       const { mockFetch } = await import('@mitdrone/mocks/fetch');
       return mockFetch(input, init);

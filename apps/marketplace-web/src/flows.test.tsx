@@ -33,7 +33,10 @@ vi.mock('next/link', () => ({
 beforeAll(() => {
   setMockConfig({ latency: false });
   server.listen({ onUnhandledRequest: 'error' });
-  configureApiClient({ baseUrl: 'http://api.test/api/v1' });
+  configureApiClient({
+    baseUrl: 'http://api.test/api/v1',
+    getCsrfToken: () => 'test-csrf-token',
+  });
 });
 afterAll(() => server.close());
 beforeEach(() => {

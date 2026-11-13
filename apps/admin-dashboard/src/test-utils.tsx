@@ -21,7 +21,10 @@ export function setupMockApi() {
   beforeAll(() => {
     setMockConfig({ latency: false });
     server.listen({ onUnhandledRequest: 'error' });
-    configureApiClient({ baseUrl: 'http://api.test/api/v1' });
+    configureApiClient({
+      baseUrl: 'http://api.test/api/v1',
+      getCsrfToken: () => 'test-csrf-token',
+    });
   });
   afterAll(() => server.close());
   beforeEach(() => {
@@ -38,6 +41,7 @@ export async function renderAs(email: string, ui: ReactNode) {
   const controller = new AuthController({
     storageKey: 'test.admin',
     allowedRoles: ['admin', 'super_admin', 'support'],
+    mockMode: true,
   });
   await controller.login({ email, password: 'Password123!' });
   const queryClient = makeQueryClient();

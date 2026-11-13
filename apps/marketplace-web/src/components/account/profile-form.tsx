@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@mitdrone/auth';
+import { ChangePasswordForm, useAuth } from '@mitdrone/auth';
 import { useUpdateProfile } from '@mitdrone/sdk';
 import { Button, Form, Input, Label, toast } from '@mitdrone/ui';
 import { useForm } from 'react-hook-form';
@@ -65,6 +65,7 @@ export function ProfileForm() {
           </Button>
         </form>
       </Form>
+      <ChangePasswordForm />
     </div>
   );
 }

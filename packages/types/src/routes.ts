@@ -8,12 +8,17 @@ export const API_PREFIX = '/api/v1';
 
 export const routes = {
   auth: {
+    registrationTerms: '/auth/registration-terms',
     login: '/auth/login',
     register: '/auth/register',
-    refresh: '/auth/refresh',
+    verifyEmail: '/auth/verify-email',
+    resendVerification: '/auth/resend-verification',
     logout: '/auth/logout',
+    logoutAll: '/auth/logout-all',
     forgotPassword: '/auth/forgot-password',
-    me: '/auth/me',
+    resetPassword: '/auth/reset-password',
+    changePassword: '/auth/change-password',
+    session: '/auth/session',
   },
   catalog: {
     products: '/products',

@@ -15,11 +15,11 @@ function envBaseUrl(): string {
 
 export interface ClientConfig {
   baseUrl: string;
-  /** Token interceptor: return the current access token, if any. */
+  /** Optional legacy bearer token hook for mock/demo API calls only. */
   getAccessToken?: (() => string | null | undefined) | undefined;
-  /** Called once (single-flight) on a 401 to get a fresh access token. Return null if the session is over. */
-  refreshAccessToken?: (() => Promise<string | null>) | undefined;
-  /** Called when a 401 cannot be recovered. Clear the session and redirect to login. */
+  /** Supplies the backend-issued CSRF token; its acquisition mechanism is backend-defined. */
+  getCsrfToken?: (() => string | null | undefined | Promise<string | null | undefined>) | undefined;
+  /** Called when an authenticated request receives a 401. */
   onAuthFailure?: (() => void) | undefined;
   /** Error interceptor hook, for global logging or toasts. */
   onError?: ((error: ApiClientError) => void) | undefined;
@@ -34,6 +34,10 @@ export interface RequestOptions {
   headers?: Record<string, string> | undefined;
   /** Set false for public endpoints such as login. Default true. */
   auth?: boolean | undefined;
+  /** Override CSRF behavior. Authenticated mutations require a token by default. */
+  csrf?: boolean | undefined;
+  /** Override the base URL for this request (e.g. health endpoints outside /api/v1). */
+  baseUrlOverride?: string | undefined;
   /** Next.js fetch caching for Server Components (ISR). */
   next?: { revalidate?: number | false; tags?: string[] } | undefined;
 }
@@ -67,7 +71,6 @@ async function readJson(response: Response): Promise<unknown> {
 
 export class ApiClient {
   private config: ClientConfig;
-  private refreshing: Promise<string | null> | null = null;
 
   constructor(config: Partial<ClientConfig> = {}) {
     this.config = { baseUrl: envBaseUrl(), ...config };
@@ -82,34 +85,20 @@ export class ApiClient {
   }
 
   async request<T>(method: Method, pattern: string, options: RequestOptions = {}): Promise<T> {
-    const url = `${this.config.baseUrl.replace(/\/$/, '')}${buildPath(pattern, options.params)}${toQueryString(options.query)}`;
+    const baseUrl = options.baseUrlOverride ?? this.config.baseUrl;
+    const url = `${baseUrl.replace(/\/$/, '')}${buildPath(pattern, options.params)}${toQueryString(options.query)}`;
     const useAuth = options.auth !== false;
     const token = useAuth ? (this.config.getAccessToken?.() ?? null) : null;
-
-    let response = await this.send(method, url, options, token);
-
-    if (response.status === 401 && useAuth && token) {
-      const body = (await readJson(response.clone())) as Partial<ApiErrorBody> | undefined;
-      if (body?.code === 'token_expired' || body?.code === 'unauthenticated') {
-        // Another request may have refreshed while this one was in flight: reuse that token.
-        const latest = this.config.getAccessToken?.() ?? null;
-        const fresh = latest && latest !== token ? latest : await this.refreshOnce();
-        if (fresh) response = await this.send(method, url, options, fresh);
-        else this.config.onAuthFailure?.();
-      }
+    const requireCsrf = options.csrf ?? (useAuth && method !== 'GET');
+    let response: Response;
+    try {
+      response = await this.send(method, url, options, token, requireCsrf);
+    } catch (error) {
+      if (error instanceof ApiClientError) this.config.onError?.(error);
+      throw error;
     }
+    if (response.status === 401 && useAuth) this.config.onAuthFailure?.();
     return this.parse<T>(response);
-  }
-
-  private refreshOnce(): Promise<string | null> {
-    const refresh = this.config.refreshAccessToken;
-    if (!refresh) return Promise.resolve(null);
-    this.refreshing ??= refresh()
-      .catch(() => null)
-      .finally(() => {
-        this.refreshing = null;
-      });
-    return this.refreshing;
   }
 
   private async send(
@@ -117,16 +106,33 @@ export class ApiClient {
     url: string,
     options: RequestOptions,
     token: string | null,
+    requireCsrf: boolean,
   ): Promise<Response> {
     const headers: Record<string, string> = { Accept: 'application/json', ...options.headers };
-    if (options.body !== undefined) headers['Content-Type'] = 'application/json';
+    const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
+    if (options.body !== undefined && !isFormData) headers['Content-Type'] = 'application/json';
+    if (requireCsrf) {
+      const csrfToken = await this.config.getCsrfToken?.();
+      if (!csrfToken) {
+        throw new ApiClientError({
+          status: 403,
+          code: 'csrf_token_unavailable',
+          message:
+            'This request requires a CSRF token, but the backend has not documented how to obtain one.',
+        });
+      }
+      headers['x-csrf-token'] = csrfToken;
+    }
     if (token) headers['Authorization'] = `Bearer ${token}`;
     const init: RequestInit & { next?: RequestOptions['next'] } = {
       method,
       headers,
-      ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
+      ...(options.body !== undefined
+        ? { body: isFormData ? (options.body as FormData) : JSON.stringify(options.body) }
+        : {}),
       ...(options.signal ? { signal: options.signal } : {}),
       ...(options.next ? { next: options.next } : {}),
+      credentials: 'include',
     };
     try {
       return await (this.config.fetch ?? fetch)(url, init);
@@ -145,9 +151,12 @@ export class ApiClient {
   private async parse<T>(response: Response): Promise<T> {
     const body = await readJson(response);
     if (response.ok) return body as T;
-    const raw = (body ?? {}) as Partial<ApiErrorBody>;
+    const outer = (body ?? {}) as Partial<ApiErrorBody> & {
+      error?: { code?: string; message?: string; fieldErrors?: Record<string, string[]> };
+    };
+    const raw = outer.error ?? outer;
     const error = new ApiClientError({
-      status: raw.status ?? response.status,
+      status: outer.status ?? response.status,
       code: raw.code ?? 'unknown_error',
       message: raw.message ?? `Request failed with status ${response.status}`,
       fieldErrors: raw.fieldErrors,

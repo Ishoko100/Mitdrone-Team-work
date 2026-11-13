@@ -1,4 +1,5 @@
 export * from './controller';
+export * from './change-password-form';
 export * from './guards';
 export * from './mock-jwt';
 export * from './provider';
